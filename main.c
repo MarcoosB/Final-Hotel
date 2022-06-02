@@ -3,26 +3,27 @@
 #include <string.h>
 #include <windows.h>
 
-
-
-typedef struct
-{
-   char nombre[30];
-   int edad;
-   int dni;
-
-}stCliente;
+const int doble = 250;
+const int triple = 375;
+const int cuadruple = 500;
+const int suite = 800;
 
 typedef struct
 {
-   int numHabitacion;
-   char tipoHabitacion[30];
-   int precioHabitacion;
-   char disponibilidad;
+    char nombre[30];
+    int edad;
+    int dni;
 
-}stHabitacion;
+} stCliente;
 
+typedef struct
+{
+    int numHabitacion;
+    char tipoHabitacion[30];
+    int precioHabitacion;
+    char disponibilidad;
 
+} stHabitacion;
 
 typedef struct
 {
@@ -33,60 +34,61 @@ typedef struct
     int  servicio;
     int pensionComida;
     float precioTotal;
-}stReserva;
+} stReserva;
 
-int validacionServicio(char a,char b, stReserva reserva);
-
-const int doble = 250;
-const int triple = 375;
-const int cuadruple = 500;
-const int suite = 800;
+int valorDeServicios(char a,char b, stReserva reserva);
 
 int main()
 {
+    stReserva reserva;
     menu();
-
     return 0;
 }
+
 
 void menu()
 {
     int op,op2;
-    do{
-    system("cls");
-    gotoxy(50,2);
-    printf("HOTEL YAPEYU");
-    gotoxy(50,4);
-    printf("ADMINISTRADOR");
-    gotoxy(8,6);
-    printf("1 - Ingresar una Nueva Reserva");
-    gotoxy(8,8);
-    printf("2 - Ver Reservas");
-    gotoxy(8,10);
-    printf("3 - Cancelar Reserva");
-    gotoxy(8,12);
-    printf("0 - SALIR");
-    gotoxy(8,14);
-    printf("Ingrese una opcion: ");
-    scanf("%d",&op);
-    switch(op)
-    {
-    case 1:
-        do{
-            system("cls");
-            stReserva reserva;
-            gotoxy(50,2);
-            printf("HOTEL YAPEYU");
-            gotoxy(44,4);
-            printf("ADMINISTRADOR - RESERVA");
-            gotoxy(8,6);
-            cargarUnaReserva(reserva);
-            getch();
+    stReserva reserva;
 
-        }while(op2!=0);
-        break;
+    do
+    {
+        system("cls");
+        gotoxy(50,2);
+        printf("HOTEL YAPEYU");
+        gotoxy(50,4);
+        printf("ADMINISTRADOR");
+        gotoxy(8,6);
+        printf("1 - Ingresar una Nueva Reserva");
+        gotoxy(8,8);
+        printf("2 - Ver Reservas");
+        gotoxy(8,10);
+        printf("3 - Cancelar Reserva");
+        gotoxy(8,12);
+        printf("0 - SALIR");
+        gotoxy(8,14);
+        printf("Ingrese una opcion: ");
+        scanf("%d",&op);
+        switch(op)
+        {
+        case 1:
+            do
+            {
+                system("cls");
+                gotoxy(50,2);
+                printf("HOTEL YAPEYU");
+                gotoxy(44,4);
+                printf("ADMINISTRADOR - RESERVA");
+                gotoxy(8,6);
+                cargarUnaReserva(reserva);
+                getch();
+
+            }
+            while(op2!=0);
+            break;
+        }
     }
-    }while(op!=0);
+    while(op!=0);
 }
 
 void cargarUnaReserva(stReserva reserva)
@@ -95,50 +97,15 @@ void cargarUnaReserva(stReserva reserva)
     printf("Cantidad de Noches: ");
     scanf("%d",&reserva.cantNoches);
 
-    gotoxy(8,8);
     int tipoHab;
-    printf("Tipo de Habitacion (Doble / Triple / Cuadruple / Suite): ");
-    fflush(stdin);
-    scanf("%s",&reserva.habitacionReserva.tipoHabitacion);
-    while(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Doble")!=0 && strcmpi(reserva.habitacionReserva.tipoHabitacion,"Triple")!=0 && strcmpi(reserva.habitacionReserva.tipoHabitacion,"Cuadruple")!=0 && strcmpi(reserva.habitacionReserva.tipoHabitacion,"Suite")!=0 )
-    {
-        gotoxy(8,8);
-        printf("El tipo no existe. Ingrese nuevamente: ");
-        scanf("%s",&reserva.habitacionReserva.tipoHabitacion);
-    }
-
-    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Doble")==0)
-    {
-        tipoHab = 2;
-        reserva.habitacionReserva.precioHabitacion = doble;
-    }
-    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Triple")==0)
-    {
-        tipoHab = 3;
-        reserva.habitacionReserva.precioHabitacion = triple;
-    }
-    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Cuadruple")==0)
-    {
-        tipoHab = 4;
-        reserva.habitacionReserva.precioHabitacion = cuadruple;
-    }
-    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Suite")==0)
-    {
-        tipoHab = 6;
-        reserva.habitacionReserva.precioHabitacion = suite;
-    }
+    int vHabitacion = cargarTipoDeHabitacion(reserva,&tipoHab);
 
     gotoxy(8,10);
     int cantPersonas;
     printf("Cantidad de Personas: ");
     scanf("%d",&cantPersonas);
 
-    while(cantPersonas>tipoHab)
-    {
-        gotoxy(8,10);
-        printf("El maximo de personas para la habitacion es %d. Ingrese nuevamente: ",tipoHab);
-        scanf("%d",&cantPersonas);
-    }
+    validacionPersonasPorHabitacion(cantPersonas,tipoHab);
 
     gotoxy(8,12);
     char pension[30];
@@ -153,14 +120,7 @@ void cargarUnaReserva(stReserva reserva)
         scanf("%s",&pension);
     }
 
-    if(strcmpi(pension,"Media")==0)
-    {
-        reserva.pensionComida = 50;
-    }
-    if(strcmpi(pension,"Completa")==0)
-    {
-       reserva.pensionComida = 100;
-    }
+    int vPension = valorPension(reserva,pension);
 
     char a,b;
     gotoxy(8,14);
@@ -180,7 +140,7 @@ void cargarUnaReserva(stReserva reserva)
     gotoxy(10,16);
     validacion(b);
 
-    int ab = validacionServicio(a,b,reserva);
+    int vServicios = valorDeServicios(a,b,reserva);
 
     system("cls");
     gotoxy(50,2);
@@ -188,26 +148,41 @@ void cargarUnaReserva(stReserva reserva)
     gotoxy(48,4);
     printf("RESERVA - CLIENTE");
 
-    stCliente A[cantPersonas];
-    cargaArreglo(A,cantPersonas);
-    mostrarArreglo(A, cantPersonas);
-    printf("\n\n--------------------ANASHEEEE");
+    stReserva C[cantPersonas];
+    cargarFamilia(C,cantPersonas);
 
 }
 
-void validacion(char a)
+void cargarPersona(stReserva C,int x,int y)
 {
-    while(a!='s'&& a!='S' && a!='n'&& a!='N')
-    {
+    gotoxy(x,y);
+    printf("Nombre y Apellido: ");
+    fflush(stdin);
+    gets(C.clienteReserva.nombre);
 
-        printf("- No existe. Ingrese nuevamente (s/n): ");
-        fflush(stdin);
-        scanf("%c",&a);
+    gotoxy(x,y+1);
+    printf("Edad: ");
+    scanf("%d",&C.clienteReserva.edad);
+
+    gotoxy(x,y+2);
+    printf("Documento: ");
+    scanf("%d",&C.clienteReserva.dni);
+}
+
+void cargarFamilia(stReserva C[],int cant)
+{
+    int x=8;
+    int y=6;
+    for(int i=0;i<cant;i++)
+    {
+        cargarPersona(C[i],x,y);
+        gotoxy(7,y+4);
+        printf("---------------------------------");
+        y+=5;
     }
 }
 
-
-int validacionServicio(char a,char b, stReserva reserva)
+int valorDeServicios(char a,char b, stReserva reserva)
 {
 
     if((a=='s' || a=='S') && (b=='s' || b=='S'))
@@ -227,35 +202,73 @@ int validacionServicio(char a,char b, stReserva reserva)
     return reserva.servicio;
 }
 
-
-void cargaArreglo(stCliente A[],int dim)
+void validacion(char a)
 {
-    int i=0;
-    while(i<dim)
+    while(a!='s'&& a!='S' && a!='n'&& a!='N')
     {
-        printf("\nNombre: ");
+
+        printf("- No existe. Ingrese nuevamente (s/n): ");
         fflush(stdin);
-        gets(A[i].nombre);
-
-        printf("\nEdad: ");
-        scanf("%d",&A[i].edad);
-
-        printf("\nDNI: ");
-        scanf("%d",&A[i].dni);
-        i++;
+        scanf("%c",&a);
     }
 }
 
-void mostrarArreglo(stCliente A[],int dim)
+int valorPension(stReserva reserva, char pension[30])
 {
-    int i=0;
-    while(i<dim)
+    if(strcmpi(pension,"Media")==0)
     {
-        printf("\n----------------------\n");
-        printf("\nNombre: %s",A[i].nombre);
-        printf("\nEDAD: %d",A[i].edad);
-        printf("\nDNI: %d",A[i].dni);
-        i++;
+        reserva.pensionComida = 50;
+    }
+    if(strcmpi(pension,"Completa")==0)
+    {
+        reserva.pensionComida = 100;
+    }
+    return reserva.pensionComida;
+}
+
+int cargarTipoDeHabitacion(stReserva reserva, int *tipoHab)
+{
+    gotoxy(8,8);
+    printf("Tipo de Habitacion (Doble / Triple / Cuadruple / Suite): ");
+    fflush(stdin);
+    scanf("%s",&reserva.habitacionReserva.tipoHabitacion);
+    while(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Doble")!=0 && strcmpi(reserva.habitacionReserva.tipoHabitacion,"Triple")!=0 && strcmpi(reserva.habitacionReserva.tipoHabitacion,"Cuadruple")!=0 && strcmpi(reserva.habitacionReserva.tipoHabitacion,"Suite")!=0 )
+    {
+        gotoxy(8,9);
+        printf("El tipo no existe. Ingrese nuevamente: ");
+        scanf("%s",&reserva.habitacionReserva.tipoHabitacion);
     }
 
+    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Doble")==0)
+    {
+        *tipoHab = 2;
+        reserva.habitacionReserva.precioHabitacion = doble;
+    }
+    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Triple")==0)
+    {
+        *tipoHab = 3;
+        reserva.habitacionReserva.precioHabitacion = triple;
+    }
+    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Cuadruple")==0)
+    {
+        *tipoHab = 4;
+        reserva.habitacionReserva.precioHabitacion = cuadruple;
+    }
+    if(strcmpi(reserva.habitacionReserva.tipoHabitacion,"Suite")==0)
+    {
+        *tipoHab = 6;
+        reserva.habitacionReserva.precioHabitacion = suite;
+    }
+
+    return reserva.habitacionReserva.precioHabitacion;
+}
+
+void validacionPersonasPorHabitacion(int cantPersonas, int tipoHab)
+{
+    while(cantPersonas>tipoHab)
+    {
+        gotoxy(8,10);
+        printf("El maximo de personas para la habitacion es %d. Ingrese nuevamente: ",tipoHab);
+        scanf("%d",&cantPersonas);
+    }
 }
