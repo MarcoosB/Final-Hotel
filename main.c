@@ -45,7 +45,6 @@ int main()
     return 0;
 }
 
-
 void menu()
 {
     int op,op2;
@@ -153,31 +152,25 @@ void cargarUnaReserva(stReserva reserva)
 
 }
 
-void cargarPersona(stReserva C,int x,int y)
-{
-    gotoxy(x,y);
-    printf("Nombre y Apellido: ");
-    fflush(stdin);
-    gets(C.clienteReserva.nombre);
-
-    gotoxy(x,y+1);
-    printf("Edad: ");
-    scanf("%d",&C.clienteReserva.edad);
-
-    gotoxy(x,y+2);
-    printf("Documento: ");
-    scanf("%d",&C.clienteReserva.dni);
-}
-
 void cargarFamilia(stReserva C[],int cant)
 {
     int x=8;
     int y=6;
     for(int i=0;i<cant;i++)
     {
-        cargarPersona(C[i],x,y);
+        gotoxy(x,y);
+        printf("- Nombre y Apellido: ");
+        fflush(stdin);
+        gets(C[i].clienteReserva.nombre);
+
+        gotoxy(x,y+1);
+        printf("- Edad: ");
+        scanf("%d",&C[i].clienteReserva.edad);
+
+        gotoxy(x,y+2);
+        printf("- Documento: ");
+        scanf("%d",&C[i].clienteReserva.dni);
         gotoxy(7,y+4);
-        printf("---------------------------------");
         y+=5;
     }
 }
@@ -270,5 +263,22 @@ void validacionPersonasPorHabitacion(int cantPersonas, int tipoHab)
         gotoxy(8,10);
         printf("El maximo de personas para la habitacion es %d. Ingrese nuevamente: ",tipoHab);
         scanf("%d",&cantPersonas);
+    }
+}
+
+
+void mostrarPersona(stReserva C)
+{
+    printf("\nNombre   : %s",C.clienteReserva.nombre);
+    printf("\nEdad     : %d",C.clienteReserva.edad);
+    printf("\nDocumento: %d",C.clienteReserva.dni);
+}
+
+void mostrarTodo(stReserva C[], int cant)
+{
+    for(int i=0;i<cant;i++)
+    {
+        mostrarPersona(C[i]);
+        printf("\n-----------\n");
     }
 }
