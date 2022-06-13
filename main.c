@@ -287,6 +287,7 @@ void cargarReserva(char archivoReserva[])
         printf("\n\nElija Habitacion a hospedar: ");
         scanf("%d",&reserva.habitacionReserva.numHabitacion);
         //pasar_a_NoDisponible("HabitacionesDisponibles.bin",reserva.habitacionReserva.numHabitacion,"HabitacionesOcupadas.bin");
+        fwrite(&reserva,sizeof(stReserva),1,archi);
         fclose(archi);
     }
 }
