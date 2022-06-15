@@ -40,7 +40,8 @@ typedef struct
 stReserva cargarFamilia(stReserva A,int pos,int x,int y);
 int valorDeServicios(char a,char b);
 stHabitacion modificarDisponibilidad(stHabitacion A);
-
+float precioTotal(stReserva A,int vHabitacion);
+float tipoDePago(char tipo[],float total,int cuotas);
 
 int main()
 {
@@ -141,7 +142,8 @@ void menu()
                     gotoxy(40,4);
                     printf("Habitaciones Dobles Disponibles");
                     printf("\n");
-                    printf("\n\nHabitaciones Dobles: \n\n");
+                    gotoxy(10,6);
+                    printf("Habitaciones Dobles:");
                     mostrarDoblesDisponibles("Habitaciones.bin");
                     printf("\n\n");
                     system("PAUSE");
@@ -294,7 +296,7 @@ void cargarReserva(char archivoReserva[])
         printf("RESERVA - HABITACIONES DISPONIBLES");
 
         gotoxy(8,8);
-        printf("Habitaciones %s disponibles: ",reserva.habitacionReserva.tipoHabitacion);
+        printf("Habitaciones %s disponibles: \n",reserva.habitacionReserva.tipoHabitacion);
         mostrarPorTipodeHabitaciones("Habitaciones.bin",reserva.habitacionReserva.tipoHabitacion);
 
         gotoxy(8,12);
@@ -316,7 +318,72 @@ void cargarReserva(char archivoReserva[])
 
         pasajeHabitacionNoDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
 
-        printf("");
+        float total = precioTotal(reserva,vHabitacion);
+
+        system("cls");
+        gotoxy(50,2);
+        printf("HOTEL YAPEYU");
+        gotoxy(43,4);
+        printf("RESERVA - RESUMEN DE PAGO ");
+        gotoxy(10,8);
+        printf("Valor de Habitacion por noche");
+        gotoxy(50,8);
+        printf("$ %d",vHabitacion*reserva.cantNoches);
+        gotoxy(10,10);
+        printf("Valor de Servicios ");
+        gotoxy(50,10);
+        printf("$ %d",reserva.servicio);
+        gotoxy(10,12);
+        printf("Valor de Pension ");
+        gotoxy(50,12);
+        printf("$ %d",reserva.pensionComida);
+        gotoxy(10,16);
+        printf("PRECIO TOTAL (Contado-Debito)");
+        gotoxy(10,14);
+        printf("----------------------------------------------------");
+        gotoxy(50,16);
+        printf("$ %.2f",total);
+        gotoxy(10,20);
+        printf("Elija metodo de pago (Efectivo / Debito / Credito): ");
+        fflush(stdin);
+        gets(reserva.tipoPago);
+        int cuotas;
+        while(strcmpi(reserva.tipoPago,"Efectivo")!=0 && strcmpi(reserva.tipoPago,"Debito")!=0 && strcmpi(reserva.tipoPago,"Credito")!=0)
+        {
+            gotoxy(10,21);
+            printf("Metodo de Pago Inexistente! Por favor, ingrese nuevamente: ");
+            fflush(stdin);
+            gets(reserva.tipoPago);
+        }
+
+        if(strcmpi(reserva.tipoPago,"Credito")==0)
+        {
+            gotoxy(10,23);
+            printf("Opciones de cuotas: ");
+            gotoxy(10,25);
+            printf("- 3  cuotas (con 15%% de recargo)");
+            gotoxy(10,26);
+            printf("- 6  cuotas (con 20%% de recargo)");
+            gotoxy(10,27);
+            printf("- 9  cuotas (con 25%% de recargo)");
+            gotoxy(10,28);
+            printf("- 12 cuotas (con 30%% de recargo)");
+            gotoxy(10,30);
+            printf("Seleccione cantidad de cuotas: ");
+            scanf("%d",&cuotas);
+
+            while(cuotas!=3 || cuotas!=6 || cuotas!=9 || cuotas!=12)
+            {
+                gotoxy(10,31);
+                printf("Error! Intente nuevamente: ");
+                scanf("%d",&cuotas);
+            }
+        }
+
+        gotoxy(10,33);
+        float precioFinal = tipoDePago(reserva.tipoPago,total,cuotas);
+
+        printf("El Precio Final Total es: $%.2f",precioFinal);
 
         fwrite(&reserva,sizeof(stReserva),1,archi);
         fclose(archi);
@@ -410,7 +477,7 @@ int valorDeServicios(char a,char b)
     {
         valor = 70;
     }
-    else if((a=='n'|| a=='N')&& (b=='n' || b=='N'))
+    else if((a=='n'|| a=='N') && (b=='n' || b=='N'))
     {
         valor=0;
     }
@@ -529,6 +596,7 @@ void mostrarDisponibles(char archivoHabitaciones[])
 void mostrarDoblesDisponibles(char archivoHabitaciones[])
 {
     stHabitacion room;
+    int i=33,j=-6;
     FILE *archi = fopen(archivoHabitaciones,"rb");
     if(archi!=NULL)
     {
@@ -536,7 +604,13 @@ void mostrarDoblesDisponibles(char archivoHabitaciones[])
         {
             if((room.numHabitacion<=43 && room.numHabitacion%2==1) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf(" %d |",room.numHabitacion);
+                printf(" %d |", room.numHabitacion);
+            }
+            fread(&room,sizeof(stHabitacion),1,archi);
+            if((room.numHabitacion<=43 && room.numHabitacion%2==1) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
+            {
+
+                printf(" %d |", room.numHabitacion);
             }
         }
         fclose(archi);
@@ -743,11 +817,11 @@ float tipoDePago(char tipo[],float total,int cuotas)
     return precio;
 }
 
-float precioTotal(stReserva A)
+float precioTotal(stReserva A,int vHabitacion)
 {
     float total;
 
-    total = (float)A.servicio + (A.cantNoches*A.habitacionReserva.precioHabitacion) + A.pensionComida;
+    total = A.servicio + (A.cantNoches*(float)vHabitacion) + A.pensionComida;
 
     return total;
 }
