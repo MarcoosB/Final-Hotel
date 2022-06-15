@@ -326,7 +326,7 @@ void cargarReserva(char archivoReserva[])
         gotoxy(43,4);
         printf("RESERVA - RESUMEN DE PAGO ");
         gotoxy(10,8);
-        printf("Valor de Habitacion por noche");
+        printf("Valor de Habitacion por noche ($ %d)", vHabitacion);
         gotoxy(50,8);
         printf("$ %d",vHabitacion*reserva.cantNoches);
         gotoxy(10,10);
@@ -338,7 +338,7 @@ void cargarReserva(char archivoReserva[])
         gotoxy(50,12);
         printf("$ %d",reserva.pensionComida);
         gotoxy(10,16);
-        printf("PRECIO TOTAL (Contado-Debito)");
+        printf("PRECIO TOTAL");
         gotoxy(10,14);
         printf("----------------------------------------------------");
         gotoxy(50,16);
@@ -372,7 +372,7 @@ void cargarReserva(char archivoReserva[])
             printf("Seleccione cantidad de cuotas: ");
             scanf("%d",&cuotas);
 
-            while(cuotas!=3 || cuotas!=6 || cuotas!=9 || cuotas!=12)
+            while(cuotas!=3 && cuotas!=6 && cuotas!=9 && cuotas!=12)
             {
                 gotoxy(10,31);
                 printf("Error! Intente nuevamente: ");
@@ -380,7 +380,7 @@ void cargarReserva(char archivoReserva[])
             }
         }
 
-        gotoxy(10,33);
+        gotoxy(10,31);
         float precioFinal = tipoDePago(reserva.tipoPago,total,cuotas);
 
         printf("El Precio Final Total es: $%.2f",precioFinal);
@@ -783,14 +783,6 @@ int verificarPorTipoHabitacion(int numHab,char tipoHab[])
 float tipoDePago(char tipo[],float total,int cuotas)
 {
     float precio,precioCuota;
-    if(strcmpi(tipo,"Contado")==0)
-    {
-        precio = total;
-    }
-    if(strcmpi(tipo,"Debito")==0)
-    {
-        precio=total;
-    }
     if(strcmpi(tipo,"Credito")==0)
     {
         if(cuotas==3)
@@ -813,6 +805,9 @@ float tipoDePago(char tipo[],float total,int cuotas)
                 precioCuota=(total*1.30)/12;
                 precio=precioCuota*12;
             }
+    }else
+    {
+        precio = total;
     }
     return precio;
 }
@@ -821,7 +816,7 @@ float precioTotal(stReserva A,int vHabitacion)
 {
     float total;
 
-    total = A.servicio + (A.cantNoches*(float)vHabitacion) + A.pensionComida;
+    total = A.servicio + (float)A.cantNoches*vHabitacion + A.pensionComida;
 
     return total;
 }
