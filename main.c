@@ -201,6 +201,7 @@ void menu()
 void cargarReserva(char archivoReserva[])
 {
     stReserva reserva;
+    fflush(stdin);
     FILE *archi = fopen(archivoReserva,"ab");
     if(archi!=NULL)
     {
@@ -299,22 +300,23 @@ void cargarReserva(char archivoReserva[])
         gotoxy(8,12);
         printf("Elija numero de habitacion a hospedar: ");
         scanf("%d",&reserva.habitacionReserva.numHabitacion);
-        int veriDispo,veriTipo;
+        int veriDispo=1,veriTipo=1;
 
         do
         {
             veriDispo= verificacionHabitacionDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
             veriTipo = verificarPorTipoHabitacion(reserva.habitacionReserva.numHabitacion,reserva.habitacionReserva.tipoHabitacion);
-            if(veriDispo!=1 && veriTipo!=1)
+            if(veriDispo!=1 || veriTipo!=1)
             {
                 gotoxy(8,12);
                 printf("Habitacion no disponible o no se encuentra dentro del tipo de habitacion '%s'... Elija nuevamente: ",reserva.habitacionReserva.tipoHabitacion);
                 scanf("%d",&reserva.habitacionReserva.numHabitacion);
             }
-        }
-        while(veriDispo!=1 && veriTipo!=1);
+        } while(veriDispo!=1 || veriTipo!=1);
 
         pasajeHabitacionNoDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
+
+        printf("");
 
         fwrite(&reserva,sizeof(stReserva),1,archi);
         fclose(archi);
@@ -331,7 +333,7 @@ void mostrarArchivo(char archivoReserva[])
     {
         while(fread(&A,sizeof(stReserva),1,archi)>0)
         {
-            printf("\n---------------- Registro %d ----------------",num++);
+            printf("\n---------------- Numero de Habitacion: %d ----------------",A.habitacionReserva.numHabitacion);
 
             for(int i=0; i<A.cantidadPersonas; i++)
             {
@@ -365,7 +367,7 @@ void mostrarArchivo(char archivoReserva[])
             }
             printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
             printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
-            printf("\n");
+            printf("\n\n");
         }
         fclose(archi);
     }
@@ -702,4 +704,50 @@ int verificarPorTipoHabitacion(int numHab,char tipoHab[])
     }
 
     return estado;
+}
+
+float tipoDePago(char tipo[],float total,int cuotas)
+{
+    float precio,precioCuota;
+    if(strcmpi(tipo,"Contado")==0)
+    {
+        precio = total;
+    }
+    if(strcmpi(tipo,"Debito")==0)
+    {
+        precio=total;
+    }
+    if(strcmpi(tipo,"Credito")==0)
+    {
+        if(cuotas==3)
+        {
+            precioCuota=(total*1.15)/3;
+            precio=precioCuota*3;
+        }
+            else if(cuotas==6)
+            {
+                precioCuota=(total*1.20)/6;
+                precio=precioCuota*6;
+            }
+            else if(cuotas==9)
+            {
+                precioCuota=(total*1.25)/9;
+                precio=precioCuota*9;
+            }
+            else if(cuotas==12)
+            {
+                precioCuota=(total*1.30)/12;
+                precio=precioCuota*12;
+            }
+    }
+    return precio;
+}
+
+float precioTotal(stReserva A)
+{
+    float total;
+
+    total = (float)A.servicio + (A.cantNoches*A.habitacionReserva.precioHabitacion) + A.pensionComida;
+
+    return total;
 }
