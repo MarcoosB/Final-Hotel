@@ -44,7 +44,10 @@ stHabitacion modificarDisponibilidad(stHabitacion A);
 
 int main()
 {
-    cargarArchivoHabitaciones("Habitaciones.bin");
+    FILE *archi=fopen("Habitaciones.bin","rb");
+    if(archi==NULL)
+        cargarArchivoHabitaciones("Habitaciones.bin");
+    fclose(archi);
     menu();
     return 0;
 }
@@ -96,7 +99,8 @@ void menu()
             system("PAUSE");
             break;
         case 3:
-            do{
+            do
+            {
                 system("cls");
                 gotoxy(50,2);
                 printf("HOTEL YAPEYU");
@@ -126,7 +130,7 @@ void menu()
                     gotoxy(44,4);
                     printf("Habitaciones Disponibles");
                     printf("\n");
-                    mostrarDisponibles("HabitacionesDisponibles.bin");
+                    mostrarDisponibles("Habitaciones.bin");
                     printf("\n\n");
                     system("PAUSE");
                     break;
@@ -138,7 +142,7 @@ void menu()
                     printf("Habitaciones Dobles Disponibles");
                     printf("\n");
                     printf("\n\nHabitaciones Dobles: \n\n");
-                    mostrarDoblesDisponibles("HabitacionesDisponibles.bin");
+                    mostrarDoblesDisponibles("Habitaciones.bin");
                     printf("\n\n");
                     system("PAUSE");
                     break;
@@ -186,7 +190,8 @@ void menu()
                     system("PAUSE");
                     break;
                 }
-            }while(op2!=0);
+            }
+            while(op2!=0);
             break;
         }
     }
@@ -196,7 +201,7 @@ void menu()
 void cargarReserva(char archivoReserva[])
 {
     stReserva reserva;
-    FILE *archi = fopen(archivoReserva,"wb");
+    FILE *archi = fopen(archivoReserva,"ab");
     if(archi!=NULL)
     {
         gotoxy(8,6);
@@ -224,7 +229,12 @@ void cargarReserva(char archivoReserva[])
         printf("Cantidad de Personas: ");
         scanf("%d",&reserva.cantidadPersonas);
 
-        validacionPersonasPorHabitacion(reserva.cantidadPersonas,tipoHab);
+        while(reserva.cantidadPersonas>tipoHab)
+        {
+            gotoxy(8,10);
+            printf("El maximo de personas para la habitacion es %d. Ingrese nuevamente: ",tipoHab);
+            scanf("%d",&reserva.cantidadPersonas);
+        }
 
         gotoxy(8,12);
         char pension[30];
@@ -268,12 +278,12 @@ void cargarReserva(char archivoReserva[])
         printf("RESERVA - CLIENTE");
 
         int x=8, y=7, num=1;
-        for(int k=0;k<reserva.cantidadPersonas;k++)
+        for(int k=0; k<reserva.cantidadPersonas; k++)
         {
-        printf("\nPersona %d de %d:",num,reserva.cantidadPersonas);
-        reserva=cargarFamilia(reserva,k,x,y);
-        y+=8;
-        num++;
+            printf("\nPersona %d de %d:",num,reserva.cantidadPersonas);
+            reserva=cargarFamilia(reserva,k,x,y);
+            y+=8;
+            num++;
         }
 
         system("cls");
@@ -291,16 +301,18 @@ void cargarReserva(char archivoReserva[])
         scanf("%d",&reserva.habitacionReserva.numHabitacion);
         int veriDispo,veriTipo;
 
-        do{
-        veriDispo= verificacionHabitacionDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
-        veriTipo = verificarPorTipoHabitacion(reserva.habitacionReserva.numHabitacion,reserva.habitacionReserva.tipoHabitacion);
-        if(veriDispo!=1 && veriTipo!=1)
+        do
         {
-        gotoxy(8,12);
-        printf("Habitacion no disponible o no se encuentra dentro del tipo de habitacion '%s'... Elija nuevamente: ",reserva.habitacionReserva.tipoHabitacion);
-        scanf("%d",&reserva.habitacionReserva.numHabitacion);
+            veriDispo= verificacionHabitacionDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
+            veriTipo = verificarPorTipoHabitacion(reserva.habitacionReserva.numHabitacion,reserva.habitacionReserva.tipoHabitacion);
+            if(veriDispo!=1 && veriTipo!=1)
+            {
+                gotoxy(8,12);
+                printf("Habitacion no disponible o no se encuentra dentro del tipo de habitacion '%s'... Elija nuevamente: ",reserva.habitacionReserva.tipoHabitacion);
+                scanf("%d",&reserva.habitacionReserva.numHabitacion);
+            }
         }
-        }while(veriDispo!=1 && veriTipo!=1);
+        while(veriDispo!=1 && veriTipo!=1);
 
         pasajeHabitacionNoDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
 
@@ -321,12 +333,12 @@ void mostrarArchivo(char archivoReserva[])
         {
             printf("\n---------------- Registro %d ----------------",num++);
 
-            for(int i=0;i<A.cantidadPersonas;i++)
+            for(int i=0; i<A.cantidadPersonas; i++)
             {
-            printf("\nHuesped %d: ",i+1);
-            printf("\n- Nombre y Apellido     : %s",A.clienteReserva[i].nombre);
-            printf("\n- Documento             : %d",A.clienteReserva[i].dni);
-            printf("\n- Edad                  : %d",A.clienteReserva[i].edad);
+                printf("\nHuesped %d: ",i+1);
+                printf("\n- Nombre y Apellido     : %s",A.clienteReserva[i].nombre);
+                printf("\n- Documento             : %d",A.clienteReserva[i].dni);
+                printf("\n- Edad                  : %d",A.clienteReserva[i].edad);
             }
             printf("\n             ----");
             printf("\n- Cantidad de Noches    : %d",A.cantNoches);
@@ -356,6 +368,10 @@ void mostrarArchivo(char archivoReserva[])
             printf("\n");
         }
         fclose(archi);
+    }
+    else
+    {
+        printf("El archivo no existe...");
     }
 }
 
@@ -437,16 +453,6 @@ int cargarTipoDeHabitacion(stReserva reserva, int *tipoHab)
     return reserva.habitacionReserva.precioHabitacion;
 }
 
-void validacionPersonasPorHabitacion(int cantPersonas, int tipoHab)
-{
-    while(cantPersonas>tipoHab)
-    {
-        gotoxy(8,10);
-        printf("El maximo de personas para la habitacion es %d. Ingrese nuevamente: ",tipoHab);
-        scanf("%d",&cantPersonas);
-    }
-}
-
 int valorPension(char pension[30])
 {
     int valor;
@@ -468,7 +474,7 @@ void cargarArchivoHabitaciones(char archivoHabitacion[])
     FILE *archi=fopen(archivoHabitacion,"wb");
     if(archi!=NULL)
     {
-        for(num = 1;num <=55;num++)
+        for(num = 1; num <=55; num++)
         {
             if(num<=43 && num%2==1)
             {
@@ -477,20 +483,23 @@ void cargarArchivoHabitaciones(char archivoHabitacion[])
                 room.precioHabitacion= 250;
                 room.disponibilidad='s';
 
-            }else if(num<=44 && num%2==0)
+            }
+            else if(num<=44 && num%2==0)
             {
                 room.numHabitacion=num;
                 strcpy(room.tipoHabitacion,"Triple");
                 room.precioHabitacion= 375;
                 room.disponibilidad='s';
 
-            }else if(num>=45 && num<=49)
+            }
+            else if(num>=45 && num<=49)
             {
                 room.numHabitacion=num;
                 strcpy(room.tipoHabitacion,"Cuadruple");
                 room.precioHabitacion= 500;
                 room.disponibilidad='s';
-            }else if(num>=50 && num<=55)
+            }
+            else if(num>=50 && num<=55)
             {
                 room.numHabitacion=num;
                 strcpy(room.tipoHabitacion,"Suite");
@@ -529,8 +538,10 @@ void mostrarDoblesDisponibles(char archivoHabitaciones[])
             }
         }
         fclose(archi);
-    }else{
-    printf("El archivo no existe...");
+    }
+    else
+    {
+        printf("El archivo no existe...");
     }
 }
 
@@ -643,8 +654,10 @@ int busquedaPorNumeroHab(char archivoHabitaciones[],int numHab)
             i++;
         }
         fclose(archi);
-    }else{
-    printf("\nEl archivo no existe....");
+    }
+    else
+    {
+        printf("\nEl archivo no existe....");
     }
     return pos;
 }
@@ -657,7 +670,8 @@ int verificacionHabitacionDisponible(char archivoHabitaciones[],int numHab)
     if(archi!=NULL)
     {
         int pos = busquedaPorNumeroHab(archivoHabitaciones,numHab);
-        fseek(archi,sizeof(stHabitacion),SEEK_SET);
+        fseek(archi,sizeof(stHabitacion)*(pos-1),SEEK_SET);
+        fread(&room,sizeof(stHabitacion),1,archi);
         if(room.disponibilidad=='s'||room.disponibilidad=='S')
         {
             estado = 1;
