@@ -56,6 +56,9 @@ int main()
 void menu()
 {
     int op,op2,op3;
+    char bNombre[30], bTipoHab[30];
+    int bDNI,bNumHab;
+
     stReserva reserva;
     do
     {
@@ -202,15 +205,15 @@ void menu()
                     gotoxy(50,2);
                     printf("HOTEL YAPEYU");
                     gotoxy(46,4);
-                    printf("Opciones de Consulta");
+                    printf("Opciones de Busqueda");
                     gotoxy(8,6);
-                    printf("1 - Consulta por DNI");
+                    printf("1 - Busqueda por DNI");
                     gotoxy(8,8);
-                    printf("2 - Consulta por Nombre");
+                    printf("2 - Busqueda por Nombre");
                     gotoxy(8,10);
-                    printf("3 - Consulta por Habitacion");
+                    printf("3 - Busqueda por Habitacion");
                     gotoxy(8,12);
-                    printf("4 - Consulta por Tipo de Habitacion");
+                    printf("4 - Busqueda por Tipo de Habitacion");
                     gotoxy(8,14);
                     printf("0 - Regresar...");
                     gotoxy(8,16);
@@ -219,10 +222,42 @@ void menu()
                     switch(op3)
                     {
                     case 1:
+                        system("cls");
+                        gotoxy(50,2);
+                        printf("HOTEL YAPEYU");
+                        gotoxy(46,4);
+                        printf("Busqueda por DNI");
+                        gotoxy(8,6);
+                        printf("Ingrese DNI a buscar: ");
+                        scanf("%d",&bDNI);
+                        busquedaPorDNI("Reservas.bin",bDNI);
+                        printf("\n");
+                        system("PAUSE");
                         break;
                     case 2:
+                        system("cls");
+                        gotoxy(50,2);
+                        printf("HOTEL YAPEYU");
+                        gotoxy(46,4);
+                        printf("Busqueda por Nombre");
+                        gotoxy(8,6);
+                        printf("Ingrese nombre a buscar: ");
+                        fflush(stdin);
+                        gets(bNombre);
+                        busquedaPorNombre("Resevas.bin",bNombre);
+                        printf("\n");
+                        system("PAUSE");
                         break;
                     case 3:
+                        system("cls");
+                        gotoxy(50,2);
+                        printf("HOTEL YAPEYU");
+                        gotoxy(40,4);
+                        printf("Busqueda por Numero de Habitacion");
+                        gotoxy(8,6);
+                        printf("Ingrese numero de habitacion a buscar: ");
+                        scanf("%d",&bNumHab);
+
                         break;
                     case 4:
                         break;
@@ -705,7 +740,7 @@ void mostrarPorTipodeHabitaciones(char archivoHabitaciones[],char tipo[])
 void pasajeHabitacionNoDisponible(char archivoHabitaciones[],int numHab)
 {
     stHabitacion A;
-    int pos = busquedaPorNumeroHab(archivoHabitaciones,numHab);
+    int pos = busquedaPosicionHab(archivoHabitaciones,numHab);
     FILE *archi = fopen(archivoHabitaciones,"r+b");
     if(archi!=NULL)
     {
@@ -727,7 +762,7 @@ stHabitacion modificarDisponibilidad(stHabitacion A)
     return A;
 }
 
-int busquedaPorNumeroHab(char archivoHabitaciones[],int numHab)
+int busquedaPosicionHab(char archivoHabitaciones[],int numHab)
 {
     int pos,i=1;
     FILE *archi=fopen(archivoHabitaciones,"rb");
@@ -895,5 +930,32 @@ void mostrarDeAUno(stReserva A)
 
 void busquedaPorNombre(char archivo[],char buscado[])
 {
+    stReserva A;
+    FILE *archi = fopen(archivo,"rb");
+    if(archi!=NULL)
+    {
+        while(fread(&A,sizeof(stReserva),1,archi)>0)
+        {
+            for(int i=0;i<A.cantidadPersonas;i++)
+            {
+                if(strcmpi(A.clienteReserva[i].nombre,buscado)==0)
+                {
+                    mostrarDeAUno(A);
+                    printf("\n");
+                }
+            }
+        }
+        fclose(archi);
+    }
+}
 
+void busquedaPorHabitacion(char archivo[],int buscado)
+{
+    stReserva A;
+    FILE*archi=fopen(archivo,"rb");
+    if(archi!=NULL)
+    {
+        w
+        fclose(archi);
+    }
 }
