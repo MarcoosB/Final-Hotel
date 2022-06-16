@@ -55,7 +55,7 @@ int main()
 
 void menu()
 {
-    int op,op2,op3;
+    int op,op2,op3,flag;
     char bNombre[30], bTipoHab[30];
     int bDNI,bNumHab;
 
@@ -230,8 +230,13 @@ void menu()
                         gotoxy(8,6);
                         printf("Ingrese DNI a buscar: ");
                         scanf("%d",&bDNI);
-                        busquedaPorDNI("Reservas.bin",bDNI);
-                        printf("\n");
+                        flag = busquedaPorDNI("Reservas.bin",bDNI);
+                        if(flag !=1)
+                        {
+                            gotoxy(8,8);
+                            printf("El DNI buscado no se encuentra registrado en una reserva...");
+                        }
+                        printf("\n\n");
                         system("PAUSE");
                         break;
                     case 2:
@@ -241,11 +246,16 @@ void menu()
                         gotoxy(46,4);
                         printf("Busqueda por Nombre");
                         gotoxy(8,6);
-                        printf("Ingrese nombre a buscar: ");
+                        printf("Ingrese Nombre y Apellido a buscar: ");
                         fflush(stdin);
                         gets(bNombre);
-                        busquedaPorNombre("Resevas.bin",bNombre);
-                        printf("\n");
+                        flag = busquedaPorNombre("Reservas.bin",bNombre);
+                        if(flag !=1)
+                        {
+                            gotoxy(8,8);
+                            printf("El Nombre y Apellido buscado no se encuentra registrado en una reserva...");
+                        }
+                        printf("\n\n");
                         system("PAUSE");
                         break;
                     case 3:
@@ -257,9 +267,33 @@ void menu()
                         gotoxy(8,6);
                         printf("Ingrese numero de habitacion a buscar: ");
                         scanf("%d",&bNumHab);
-
+                        flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
+                        if(flag !=1)
+                        {
+                            gotoxy(8,8);
+                            printf("El numero de Habitacion no se encuentra registrada en una reserva...");
+                        }
+                        printf("\n\n");
+                        system("PAUSE");
                         break;
                     case 4:
+                        system("cls");
+                        gotoxy(50,2);
+                        printf("HOTEL YAPEYU");
+                        gotoxy(40,4);
+                        printf("Busqueda por Tipo de Habitacion");
+                        gotoxy(8,6);
+                        printf("Ingrese tipo de habitacion a buscar: ");
+                        fflush(stdin);
+                        gets(bTipoHab);
+                        int flag = busquedaPorTipoHabitacion("Reservas.bin",bTipoHab);
+                        if(flag !=1)
+                        {
+                            gotoxy(8,8);
+                            printf("El tipo de Habitacion no se encuentra registrada en una reserva...");
+                        }
+                        printf("\n\n");
+                        system("PAUSE");
                         break;
                     case 0:
                         break;
@@ -793,7 +827,7 @@ int verificacionHabitacionDisponible(char archivoHabitaciones[],int numHab)
     FILE *archi = fopen(archivoHabitaciones,"rb");
     if(archi!=NULL)
     {
-        int pos = busquedaPorNumeroHab(archivoHabitaciones,numHab);
+        int pos = busquedaPosicionHab(archivoHabitaciones,numHab);
         fseek(archi,sizeof(stHabitacion)*(pos-1),SEEK_SET);
         fread(&room,sizeof(stHabitacion),1,archi);
         if(room.disponibilidad=='s'||room.disponibilidad=='S')
@@ -869,8 +903,9 @@ float precioTotal(stReserva A,int vHabitacion)
     return total;
 }
 
-void busquedaPorDNI(char archivo[],int buscado)
+int busquedaPorDNI(char archivo[],int buscado)
 {
+    int flag =0;
     stReserva A;
     FILE *archi = fopen(archivo,"rb");
     if(archi!=NULL)
@@ -882,11 +917,14 @@ void busquedaPorDNI(char archivo[],int buscado)
                 if(A.clienteReserva[i].dni==buscado)
                 {
                     mostrarDeAUno(A);
+                    printf("\n");
+                    flag = 1;
                 }
             }
         }
         fclose(archi);
     }
+    return flag;
 }
 
 void mostrarDeAUno(stReserva A)
@@ -928,9 +966,10 @@ void mostrarDeAUno(stReserva A)
             printf("\n- Tipo de Pago          : %s",A.tipoPago);
 }
 
-void busquedaPorNombre(char archivo[],char buscado[])
+int busquedaPorNombre(char archivo[],char buscado[])
 {
     stReserva A;
+    int flag = 0;
     FILE *archi = fopen(archivo,"rb");
     if(archi!=NULL)
     {
@@ -942,20 +981,53 @@ void busquedaPorNombre(char archivo[],char buscado[])
                 {
                     mostrarDeAUno(A);
                     printf("\n");
+                    flag = 1;
                 }
             }
         }
         fclose(archi);
     }
+    return flag;
 }
 
-void busquedaPorHabitacion(char archivo[],int buscado)
+int busquedaPorHabitacion(char archivo[],int buscado)
 {
+    int flag;
     stReserva A;
     FILE*archi=fopen(archivo,"rb");
     if(archi!=NULL)
     {
-        w
+        while(fread(&A,sizeof(stReserva),1,archi)>0)
+        {
+            if(A.habitacionReserva.numHabitacion == buscado)
+            {
+                mostrarDeAUno(A);
+                printf("\n");
+                flag = 1;
+            }
+        }
         fclose(archi);
     }
+    return flag;
+}
+
+int busquedaPorTipoHabitacion(char archivo[],char buscado[])
+{
+    int flag;
+    stReserva A;
+    FILE *archi =fopen(archivo,"rb");
+    if(archi!=NULL)
+    {
+        while(fread(&A,sizeof(stReserva),1,archi)>0)
+        {
+            if(strcmpi(A.habitacionReserva.tipoHabitacion,buscado)==0)
+            {
+                mostrarDeAUno(A);
+                printf("\n");
+                flag = 1;
+            }
+        }
+        fclose(archi);
+    }
+    return flag;
 }
