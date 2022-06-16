@@ -26,12 +26,18 @@ typedef struct
 
 typedef struct
 {
+    int servicio;
+    int pensionComida;
+    int estacionamiento;
+} stServicios;
+
+typedef struct
+{
     stCliente clienteReserva[10];
     stHabitacion habitacionReserva;
+    stServicios serviciosReserva;
     int cantNoches;
     char tipoPago[30];
-    int  servicio;
-    int pensionComida;
     float precioTotal;
     char estado[30];
     int cantidadPersonas;
@@ -42,6 +48,7 @@ int valorDeServicios(char a,char b);
 stHabitacion modificarDisponibilidad(stHabitacion A);
 float precioTotal(stReserva A,int vHabitacion);
 float tipoDePago(char tipo[],float total,int cuotas);
+int valorEstacionamiento(char c,stReserva A);
 
 int main()
 {
@@ -308,34 +315,36 @@ void menu()
             while(op3!=0);
             break;
         case 5:
-                    system("cls");
-                    gotoxy(50,2);
-                    printf("HOTEL YAPEYU");
-                    gotoxy(47,4);
-                    printf("Cancelar Reserva");
-                    gotoxy(8,6);
-                    printf("\nIngrese el numero de habitacion: ");
-                    scanf("%d", &bNumHab);
-                    flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
-                    if(flag !=1)
-                    {
-                        gotoxy(8,8);
-                        printf("\nEl numero de Habitacion no se encuentra registrada en una reserva...");
-                    }
+            system("cls");
+            gotoxy(50,2);
+            printf("HOTEL YAPEYU");
+            gotoxy(47,4);
+            printf("Cancelar Reserva");
+            gotoxy(8,6);
+            printf("\nIngrese el numero de habitacion: ");
+            scanf("%d", &bNumHab);
+            flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
+            if(flag !=1)
+            {
+                gotoxy(8,8);
+                printf("\nEl numero de Habitacion no se encuentra registrada en una reserva...");
+            }
 
-                    printf("\nSeguro desea cancelar la reserva? Presione 's' o 'n': ");
-                    fflush(stdin);
-                    scanf("%c",&seguro);
+            printf("\nSeguro desea cancelar la reserva? Presione 's' o 'n': ");
+            fflush(stdin);
+            scanf("%c",&seguro);
 
-                    if(seguro=='s'||seguro=='S')
-                    {
-                        borrarRegistro(bNumHab);
-                        printf("\nReserva cancelada exitosamente!");
-                        getch();
-                    }else{
-                        printf("\nUsted ha decidido no cancelar la reserva...");
-                        getch();
-                    }
+            if(seguro=='s'||seguro=='S')
+            {
+                borrarRegistro(bNumHab);
+                printf("\nReserva cancelada exitosamente!");
+                getch();
+            }
+            else
+            {
+                printf("\nUsted ha decidido no cancelar la reserva...");
+                getch();
+            }
             break;
         }
     }
@@ -394,9 +403,9 @@ void cargarReserva(char archivoReserva[])
             scanf("%s",&pension);
         }
 
-        reserva.pensionComida = valorPension(pension);
+        reserva.serviciosReserva.pensionComida = valorPension(pension);
 
-        char a,b;
+        char a,b,c;
         gotoxy(8,14);
         printf("Tipos de Servicios: ");
 
@@ -404,17 +413,23 @@ void cargarReserva(char archivoReserva[])
         printf("- GYM (s/n) : ");
         fflush(stdin);
         scanf("%c",&a);
-        gotoxy(10,15);
-        validacion(a);
+        validacion(a,10,16);
 
-        gotoxy(10,16);
+        gotoxy(10,17);
         printf("- SPA (s/n) : ");
         fflush(stdin);
         scanf("%c",&b);
-        gotoxy(10,16);
-        validacion(b);
+        validacion(b,10,18);
 
-        reserva.servicio = valorDeServicios(a,b);
+        gotoxy(10,19);
+        printf("- Estacionamiento(s/n) :");
+        fflush(stdin);
+        scanf("%c",&c);
+        validacion(c,10,20);
+
+
+        reserva.serviciosReserva.estacionamiento = valorEstacionamiento(c,reserva);
+        reserva.serviciosReserva.servicio = valorDeServicios(a,b);
 
         system("cls");
         gotoxy(50,2);
@@ -475,18 +490,22 @@ void cargarReserva(char archivoReserva[])
         gotoxy(10,10);
         printf("Valor de Servicios ");
         gotoxy(50,10);
-        printf("$ %d",reserva.servicio);
+        printf("$ %d",reserva.serviciosReserva.servicio);
         gotoxy(10,12);
         printf("Valor de Pension ");
         gotoxy(50,12);
-        printf("$ %d",reserva.pensionComida);
+        printf("$ %d",reserva.serviciosReserva.pensionComida);
+        gotoxy(10,14);
+        printf("Valor Estacionamiento por noche($ 25)");
+        gotoxy(50,14);
+        printf("$ %d",reserva.serviciosReserva.estacionamiento);
         gotoxy(10,16);
         printf("PRECIO TOTAL");
-        gotoxy(10,14);
+        gotoxy(10,16);
         printf("----------------------------------------------------");
-        gotoxy(50,16);
+        gotoxy(50,18);
         printf("$ %.2f",total);
-        gotoxy(10,20);
+        gotoxy(10,22);
         printf("Elija metodo de pago (Efectivo / Debito / Credito): ");
         fflush(stdin);
         gets(reserva.tipoPago);
@@ -536,6 +555,19 @@ void cargarReserva(char archivoReserva[])
         fwrite(&reserva,sizeof(stReserva),1,archi);
         fclose(archi);
     }
+}
+
+
+int valorEstacionamiento(char c,stReserva A)
+{
+    int v;
+    if(c == 's'||c =='S')
+    {
+        v = 25 * A.cantNoches;
+    }else{
+        v=0;
+    }
+    return v;
 }
 
 void mostrarArchivo(char archivoReserva[])
@@ -601,11 +633,11 @@ int valorDeServicios(char a,char b)
     return valor;
 }
 
-void validacion(char a)
+void validacion(char a,int x,int y)
 {
     while(a!='s'&& a!='S' && a!='n'&& a!='N')
     {
-
+        gotoxy(x,y);
         printf("- No existe. Ingrese nuevamente (s/n): ");
         fflush(stdin);
         scanf("%c",&a);
@@ -933,7 +965,7 @@ float precioTotal(stReserva A,int vHabitacion)
 {
     float total;
 
-    total = A.servicio + (float)A.cantNoches*vHabitacion + A.pensionComida;
+    total = A.serviciosReserva.servicio + (float)A.cantNoches*vHabitacion + A.serviciosReserva.pensionComida + A.serviciosReserva.estacionamiento;
 
     return total;
 }
@@ -975,20 +1007,20 @@ void mostrarDeAUno(stReserva A)
     }
     printf("\n             ----");
     printf("\n- Cantidad de Noches    : %d",A.cantNoches);
-    if(A.pensionComida==50)
+    if(A.serviciosReserva.pensionComida==50)
         printf("\n- Pension de Comida     : Media");
     else
         printf("\n- Pension de Comida     : Completa");
 
-    if(A.servicio==100)
+    if(A.serviciosReserva.servicio==100)
     {
         printf("\n- Servicios             : Gym y Spa");
     }
-    else if(A.servicio==70)
+    else if(A.serviciosReserva.servicio==70)
     {
         printf("\n- Servicios             : Spa");
     }
-    else if(A.servicio==50)
+    else if(A.serviciosReserva.servicio==50)
     {
         printf("\n- Servicios             : Gym");
     }
@@ -999,6 +1031,14 @@ void mostrarDeAUno(stReserva A)
     printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
     printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
     printf("\n- Tipo de Pago          : %s",A.tipoPago);
+    if(A.serviciosReserva.estacionamiento !=0)
+    {
+        printf("\n- Estacionamiento       : Si");
+    }else
+    {
+        printf("\n- Estacionamieto        : No");
+    }
+
 }
 
 int busquedaPorNombre(char archivo[],char buscado[])
@@ -1087,7 +1127,9 @@ void borrarRegistro(int bNumHab)
         {
             printf("La habitacion eliminada es: %d",A.habitacionReserva.numHabitacion);
             existe = 1;
-        }else{
+        }
+        else
+        {
             fwrite(&A,sizeof(stReserva),1,nuevo);
         }
         fread(&A,sizeof(stReserva),1,archi);
@@ -1101,7 +1143,6 @@ void borrarRegistro(int bNumHab)
     fclose(nuevo);
     remove("Reservas.bin");
     rename("Reservas.tmp","Reservas.bin");
-
     //pasajeHabitacionDisponible("Habitaciones.bin",bNumHab);
-
 }
+
