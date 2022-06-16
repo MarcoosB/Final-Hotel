@@ -56,9 +56,8 @@ int main()
 void menu()
 {
     int op,op2,op3,flag;
-    char bNombre[30], bTipoHab[30];
+    char bNombre[30], bTipoHab[30],seguro;
     int bDNI,bNumHab;
-
     stReserva reserva;
     do
     {
@@ -197,113 +196,146 @@ void menu()
                     system("PAUSE");
                     break;
                 }
-            }while(op2!=0);
+            }
+            while(op2!=0);
             break;
-            case 4:
-            do{
+        case 4:
+            do
+            {
+                system("cls");
+                gotoxy(50,2);
+                printf("HOTEL YAPEYU");
+                gotoxy(46,4);
+                printf("Opciones de Busqueda");
+                gotoxy(8,6);
+                printf("1 - Busqueda por DNI");
+                gotoxy(8,8);
+                printf("2 - Busqueda por Nombre");
+                gotoxy(8,10);
+                printf("3 - Busqueda por Habitacion");
+                gotoxy(8,12);
+                printf("4 - Busqueda por Tipo de Habitacion");
+                gotoxy(8,14);
+                printf("0 - Regresar...");
+                gotoxy(8,16);
+                printf("Ingrese una opcion: ");
+                scanf("%d",&op3);
+                switch(op3)
+                {
+                case 1:
                     system("cls");
                     gotoxy(50,2);
                     printf("HOTEL YAPEYU");
                     gotoxy(46,4);
-                    printf("Opciones de Busqueda");
+                    printf("Busqueda por DNI");
                     gotoxy(8,6);
-                    printf("1 - Busqueda por DNI");
-                    gotoxy(8,8);
-                    printf("2 - Busqueda por Nombre");
-                    gotoxy(8,10);
-                    printf("3 - Busqueda por Habitacion");
-                    gotoxy(8,12);
-                    printf("4 - Busqueda por Tipo de Habitacion");
-                    gotoxy(8,14);
-                    printf("0 - Regresar...");
-                    gotoxy(8,16);
-                    printf("Ingrese una opcion: ");
-                    scanf("%d",&op3);
-                    switch(op3)
+                    printf("Ingrese DNI a buscar: ");
+                    scanf("%d",&bDNI);
+                    flag = busquedaPorDNI("Reservas.bin",bDNI);
+                    if(flag !=1)
                     {
-                    case 1:
-                        system("cls");
-                        gotoxy(50,2);
-                        printf("HOTEL YAPEYU");
-                        gotoxy(46,4);
-                        printf("Busqueda por DNI");
-                        gotoxy(8,6);
-                        printf("Ingrese DNI a buscar: ");
-                        scanf("%d",&bDNI);
-                        flag = busquedaPorDNI("Reservas.bin",bDNI);
-                        if(flag !=1)
-                        {
-                            gotoxy(8,8);
-                            printf("El DNI buscado no se encuentra registrado en una reserva...");
-                        }
-                        printf("\n\n");
-                        system("PAUSE");
-                        break;
-                    case 2:
-                        system("cls");
-                        gotoxy(50,2);
-                        printf("HOTEL YAPEYU");
-                        gotoxy(46,4);
-                        printf("Busqueda por Nombre");
-                        gotoxy(8,6);
-                        printf("Ingrese Nombre y Apellido a buscar: ");
-                        fflush(stdin);
-                        gets(bNombre);
-                        flag = busquedaPorNombre("Reservas.bin",bNombre);
-                        if(flag !=1)
-                        {
-                            gotoxy(8,8);
-                            printf("El Nombre y Apellido buscado no se encuentra registrado en una reserva...");
-                        }
-                        printf("\n\n");
-                        system("PAUSE");
-                        break;
-                    case 3:
-                        system("cls");
-                        gotoxy(50,2);
-                        printf("HOTEL YAPEYU");
-                        gotoxy(40,4);
-                        printf("Busqueda por Numero de Habitacion");
-                        gotoxy(8,6);
-                        printf("Ingrese numero de habitacion a buscar: ");
-                        scanf("%d",&bNumHab);
-                        flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
-                        if(flag !=1)
-                        {
-                            gotoxy(8,8);
-                            printf("El numero de Habitacion no se encuentra registrada en una reserva...");
-                        }
-                        printf("\n\n");
-                        system("PAUSE");
-                        break;
-                    case 4:
-                        system("cls");
-                        gotoxy(50,2);
-                        printf("HOTEL YAPEYU");
-                        gotoxy(40,4);
-                        printf("Busqueda por Tipo de Habitacion");
-                        gotoxy(8,6);
-                        printf("Ingrese tipo de habitacion a buscar: ");
-                        fflush(stdin);
-                        gets(bTipoHab);
-                        int flag = busquedaPorTipoHabitacion("Reservas.bin",bTipoHab);
-                        if(flag !=1)
-                        {
-                            gotoxy(8,8);
-                            printf("El tipo de Habitacion no se encuentra registrada en una reserva...");
-                        }
-                        printf("\n\n");
-                        system("PAUSE");
-                        break;
-                    case 0:
-                        break;
-                    default:
-                        printf("La opcion ingresada no existe...");
-
-                        system("PAUSE");
-                        break;
+                        gotoxy(8,8);
+                        printf("El DNI buscado no se encuentra registrado en una reserva...");
                     }
-            }while(op3!=0);
+                    printf("\n\n");
+                    system("PAUSE");
+                    break;
+                case 2:
+                    system("cls");
+                    gotoxy(50,2);
+                    printf("HOTEL YAPEYU");
+                    gotoxy(46,4);
+                    printf("Busqueda por Nombre");
+                    gotoxy(8,6);
+                    printf("Ingrese Nombre y Apellido a buscar: ");
+                    fflush(stdin);
+                    gets(bNombre);
+                    flag = busquedaPorNombre("Reservas.bin",bNombre);
+                    if(flag !=1)
+                    {
+                        gotoxy(8,8);
+                        printf("El Nombre y Apellido buscado no se encuentra registrado en una reserva...");
+                    }
+                    printf("\n\n");
+                    system("PAUSE");
+                    break;
+                case 3:
+                    system("cls");
+                    gotoxy(50,2);
+                    printf("HOTEL YAPEYU");
+                    gotoxy(40,4);
+                    printf("Busqueda por Numero de Habitacion");
+                    gotoxy(8,6);
+                    printf("Ingrese numero de habitacion a buscar: ");
+                    scanf("%d",&bNumHab);
+                    flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
+                    if(flag !=1)
+                    {
+                        gotoxy(8,8);
+                        printf("El numero de Habitacion no se encuentra registrada en una reserva...");
+                    }
+                    printf("\n\n");
+                    system("PAUSE");
+                    break;
+                case 4:
+                    system("cls");
+                    gotoxy(50,2);
+                    printf("HOTEL YAPEYU");
+                    gotoxy(40,4);
+                    printf("Busqueda por Tipo de Habitacion");
+                    gotoxy(8,6);
+                    printf("Ingrese tipo de habitacion a buscar: ");
+                    fflush(stdin);
+                    gets(bTipoHab);
+                    flag = busquedaPorTipoHabitacion("Reservas.bin",bTipoHab);
+                    if(flag !=1)
+                    {
+                        gotoxy(8,8);
+                        printf("El tipo de Habitacion no se encuentra registrada en una reserva...");
+                    }
+
+                    printf("\n\n");
+                    system("PAUSE");
+                    break;
+                case 0:
+                    break;
+                default:
+                    printf("La opcion ingresada no existe...");
+                    system("PAUSE");
+                    break;
+                }
+            }
+            while(op3!=0);
+            break;
+        case 5:
+                    system("cls");
+                    gotoxy(50,2);
+                    printf("HOTEL YAPEYU");
+                    gotoxy(47,4);
+                    printf("Cancelar Reserva");
+                    gotoxy(8,6);
+                    printf("\nIngrese el numero de habitacion: ");
+                    scanf("%d", &bNumHab);
+                    flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
+                    if(flag !=1)
+                    {
+                        gotoxy(8,8);
+                        printf("\nEl numero de Habitacion no se encuentra registrada en una reserva...");
+                    }
+
+                    printf("\nSeguro desea cancelar la reserva? Presione 's' o 'n': ");
+                    fflush(stdin);
+                    scanf("%c",&seguro);
+
+                    if(seguro=='s'||seguro=='S')
+                    {
+                        borrarRegistro(bNumHab);
+                        printf("\nReserva cancelada exitosamente!");
+                        getch();
+                    }else{
+                        printf("\nUsted ha decidido no cancelar la reserva...");
+                        getch();
+                    }
             break;
         }
     }
@@ -424,7 +456,8 @@ void cargarReserva(char archivoReserva[])
                 printf("Habitacion no disponible o no se encuentra dentro del tipo de habitacion '%s'... Elija nuevamente: ",reserva.habitacionReserva.tipoHabitacion);
                 scanf("%d",&reserva.habitacionReserva.numHabitacion);
             }
-        } while(veriDispo!=1 || veriTipo!=1);
+        }
+        while(veriDispo!=1 || veriTipo!=1);
 
         pasajeHabitacionNoDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
 
@@ -490,7 +523,8 @@ void cargarReserva(char archivoReserva[])
                 scanf("%d",&cuotas);
             }
             gotoxy(10,33);
-        }else
+        }
+        else
         {
             gotoxy(10,23);
         }
@@ -522,7 +556,7 @@ void mostrarArchivo(char archivoReserva[])
     }
     else
     {
-        printf("El archivo no existe...");
+        printf("\n\nEl archivo no existe...");
     }
 }
 
@@ -872,22 +906,23 @@ float tipoDePago(char tipo[],float total,int cuotas)
             precioCuota=(total*1.15)/3;
             precio=precioCuota*3;
         }
-            else if(cuotas==6)
-            {
-                precioCuota=(total*1.20)/6;
-                precio=precioCuota*6;
-            }
-            else if(cuotas==9)
-            {
-                precioCuota=(total*1.25)/9;
-                precio=precioCuota*9;
-            }
-            else if(cuotas==12)
-            {
-                precioCuota=(total*1.30)/12;
-                precio=precioCuota*12;
-            }
-    }else
+        else if(cuotas==6)
+        {
+            precioCuota=(total*1.20)/6;
+            precio=precioCuota*6;
+        }
+        else if(cuotas==9)
+        {
+            precioCuota=(total*1.25)/9;
+            precio=precioCuota*9;
+        }
+        else if(cuotas==12)
+        {
+            precioCuota=(total*1.30)/12;
+            precio=precioCuota*12;
+        }
+    }
+    else
     {
         precio = total;
     }
@@ -912,7 +947,7 @@ int busquedaPorDNI(char archivo[],int buscado)
     {
         while(fread(&A,sizeof(stReserva),1,archi)>0)
         {
-            for(int i=0;i<A.cantidadPersonas;i++)
+            for(int i=0; i<A.cantidadPersonas; i++)
             {
                 if(A.clienteReserva[i].dni==buscado)
                 {
@@ -929,41 +964,41 @@ int busquedaPorDNI(char archivo[],int buscado)
 
 void mostrarDeAUno(stReserva A)
 {
-            printf("\n---------------- Numero de Habitacion: %d ----------------",A.habitacionReserva.numHabitacion);
+    printf("\n---------------- Numero de Habitacion: %d ----------------",A.habitacionReserva.numHabitacion);
 
-            for(int i=0; i<A.cantidadPersonas; i++)
-            {
-                printf("\nHuesped %d: ",i+1);
-                printf("\n- Nombre y Apellido     : %s",A.clienteReserva[i].nombre);
-                printf("\n- Documento             : %d",A.clienteReserva[i].dni);
-                printf("\n- Edad                  : %d",A.clienteReserva[i].edad);
-            }
-            printf("\n             ----");
-            printf("\n- Cantidad de Noches    : %d",A.cantNoches);
-            if(A.pensionComida==50)
-                printf("\n- Pension de Comida     : Media");
-            else
-                printf("\n- Pension de Comida     : Completa");
+    for(int i=0; i<A.cantidadPersonas; i++)
+    {
+        printf("\nHuesped %d: ",i+1);
+        printf("\n- Nombre y Apellido     : %s",A.clienteReserva[i].nombre);
+        printf("\n- Documento             : %d",A.clienteReserva[i].dni);
+        printf("\n- Edad                  : %d",A.clienteReserva[i].edad);
+    }
+    printf("\n             ----");
+    printf("\n- Cantidad de Noches    : %d",A.cantNoches);
+    if(A.pensionComida==50)
+        printf("\n- Pension de Comida     : Media");
+    else
+        printf("\n- Pension de Comida     : Completa");
 
-            if(A.servicio==100)
-            {
-                printf("\n- Servicios             : Gym y Spa");
-            }
-            else if(A.servicio==70)
-            {
-                printf("\n- Servicios             : Spa");
-            }
-            else if(A.servicio==50)
-            {
-                printf("\n- Servicios             : Gym");
-            }
-            else
-            {
-                printf("\n- Servicios             : No");
-            }
-            printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
-            printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
-            printf("\n- Tipo de Pago          : %s",A.tipoPago);
+    if(A.servicio==100)
+    {
+        printf("\n- Servicios             : Gym y Spa");
+    }
+    else if(A.servicio==70)
+    {
+        printf("\n- Servicios             : Spa");
+    }
+    else if(A.servicio==50)
+    {
+        printf("\n- Servicios             : Gym");
+    }
+    else
+    {
+        printf("\n- Servicios             : No");
+    }
+    printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
+    printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
+    printf("\n- Tipo de Pago          : %s",A.tipoPago);
 }
 
 int busquedaPorNombre(char archivo[],char buscado[])
@@ -975,7 +1010,7 @@ int busquedaPorNombre(char archivo[],char buscado[])
     {
         while(fread(&A,sizeof(stReserva),1,archi)>0)
         {
-            for(int i=0;i<A.cantidadPersonas;i++)
+            for(int i=0; i<A.cantidadPersonas; i++)
             {
                 if(strcmpi(A.clienteReserva[i].nombre,buscado)==0)
                 {
@@ -1013,7 +1048,7 @@ int busquedaPorHabitacion(char archivo[],int buscado)
 
 int busquedaPorTipoHabitacion(char archivo[],char buscado[])
 {
-    int flag;
+    int flag=0;
     stReserva A;
     FILE *archi =fopen(archivo,"rb");
     if(archi!=NULL)
@@ -1030,4 +1065,43 @@ int busquedaPorTipoHabitacion(char archivo[],char buscado[])
         fclose(archi);
     }
     return flag;
+}
+
+void borrarRegistro(int bNumHab)
+{
+
+    FILE *archi = fopen("Reservas.bin","rb");
+    if(archi==NULL)
+        exit(1);
+    stReserva A;
+
+    FILE *nuevo = fopen("Reservas.tmp","ab");
+    if(archi==NULL)
+        exit(1);
+
+    int existe=0;
+    fread(&A,sizeof(stReserva),1,archi);
+    while(!feof(archi))
+    {
+        if(bNumHab==A.habitacionReserva.numHabitacion)
+        {
+            printf("La habitacion eliminada es: %d",A.habitacionReserva.numHabitacion);
+            existe = 1;
+        }else{
+            fwrite(&A,sizeof(stReserva),1,nuevo);
+        }
+        fread(&A,sizeof(stReserva),1,archi);
+    }
+
+    if(existe==0)
+    {
+        printf("La habitacion no esta cargada...");
+    }
+    fclose(archi);
+    fclose(nuevo);
+    remove("Reservas.bin");
+    rename("Reservas.tmp","Reservas.bin");
+
+    //pasajeHabitacionDisponible("Habitaciones.bin",bNumHab);
+
 }
