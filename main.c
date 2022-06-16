@@ -71,10 +71,12 @@ void menu()
         gotoxy(8,10);
         printf("3 - Ver Habitaciones Disponibles");
         gotoxy(8,12);
-        printf("4 - Cancelar Reserva");
+        printf("4 - Consulta de Reserva");
         gotoxy(8,14);
-        printf("0 - SALIR");
+        printf("5 - Cancelar Reserva");
         gotoxy(8,16);
+        printf("0 - Salir");
+        gotoxy(8,20);
         printf("Ingrese una opcion: ");
         scanf("%d",&op);
         switch(op)
@@ -192,8 +194,47 @@ void menu()
                     system("PAUSE");
                     break;
                 }
-            }
-            while(op2!=0);
+            }while(op2!=0);
+            break;
+            case 4:
+            do{
+                    system("cls");
+                    gotoxy(50,2);
+                    printf("HOTEL YAPEYU");
+                    gotoxy(46,4);
+                    printf("Opciones de Consulta");
+                    gotoxy(8,6);
+                    printf("1 - Consulta por DNI");
+                    gotoxy(8,8);
+                    printf("2 - Consulta por Nombre");
+                    gotoxy(8,10);
+                    printf("3 - Consulta por Habitacion");
+                    gotoxy(8,12);
+                    printf("4 - Consulta por Tipo de Habitacion");
+                    gotoxy(8,14);
+                    printf("0 - Regresar...");
+                    gotoxy(8,16);
+                    printf("Ingrese una opcion: ");
+                    scanf("%d",&op3);
+                    switch(op3)
+                    {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        printf("La opcion ingresada no existe...");
+
+                        system("PAUSE");
+                        break;
+                    }
+            }while(op3!=0);
             break;
         }
     }
@@ -348,6 +389,8 @@ void cargarReserva(char archivoReserva[])
         fflush(stdin);
         gets(reserva.tipoPago);
         int cuotas;
+        float precioFinal;
+
         while(strcmpi(reserva.tipoPago,"Efectivo")!=0 && strcmpi(reserva.tipoPago,"Debito")!=0 && strcmpi(reserva.tipoPago,"Credito")!=0)
         {
             gotoxy(10,21);
@@ -371,17 +414,19 @@ void cargarReserva(char archivoReserva[])
             gotoxy(10,30);
             printf("Seleccione cantidad de cuotas: ");
             scanf("%d",&cuotas);
-
             while(cuotas!=3 && cuotas!=6 && cuotas!=9 && cuotas!=12)
             {
                 gotoxy(10,31);
                 printf("Error! Intente nuevamente: ");
                 scanf("%d",&cuotas);
             }
+            gotoxy(10,33);
+        }else
+        {
+            gotoxy(10,23);
         }
 
-        gotoxy(10,31);
-        float precioFinal = tipoDePago(reserva.tipoPago,total,cuotas);
+        precioFinal = tipoDePago(reserva.tipoPago,total,cuotas);
 
         printf("El Precio Final Total es: $%.2f",precioFinal);
 
@@ -400,42 +445,10 @@ void mostrarArchivo(char archivoReserva[])
     {
         while(fread(&A,sizeof(stReserva),1,archi)>0)
         {
-            printf("\n---------------- Numero de Habitacion: %d ----------------",A.habitacionReserva.numHabitacion);
-
-            for(int i=0; i<A.cantidadPersonas; i++)
-            {
-                printf("\nHuesped %d: ",i+1);
-                printf("\n- Nombre y Apellido     : %s",A.clienteReserva[i].nombre);
-                printf("\n- Documento             : %d",A.clienteReserva[i].dni);
-                printf("\n- Edad                  : %d",A.clienteReserva[i].edad);
-            }
-            printf("\n             ----");
-            printf("\n- Cantidad de Noches    : %d",A.cantNoches);
-            if(A.pensionComida==50)
-                printf("\n- Pension de Comida     : Media");
-            else
-                printf("\n- Pension de Comida     : Completa");
-
-            if(A.servicio==100)
-            {
-                printf("\n- Servicios             : Gym y Spa");
-            }
-            else if(A.servicio==70)
-            {
-                printf("\n- Servicios             : Spa");
-            }
-            else if(A.servicio==50)
-            {
-                printf("\n- Servicios             : Gym");
-            }
-            else
-            {
-                printf("\n- Servicios             : No");
-            }
-            printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
-            printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
-            printf("\n\n");
+            mostrarDeAUno(A);
+            printf("\n");
         }
+
         fclose(archi);
     }
     else
@@ -819,4 +832,68 @@ float precioTotal(stReserva A,int vHabitacion)
     total = A.servicio + (float)A.cantNoches*vHabitacion + A.pensionComida;
 
     return total;
+}
+
+void busquedaPorDNI(char archivo[],int buscado)
+{
+    stReserva A;
+    FILE *archi = fopen(archivo,"rb");
+    if(archi!=NULL)
+    {
+        while(fread(&A,sizeof(stReserva),1,archi)>0)
+        {
+            for(int i=0;i<A.cantidadPersonas;i++)
+            {
+                if(A.clienteReserva[i].dni==buscado)
+                {
+                    mostrarDeAUno(A);
+                }
+            }
+        }
+        fclose(archi);
+    }
+}
+
+void mostrarDeAUno(stReserva A)
+{
+            printf("\n---------------- Numero de Habitacion: %d ----------------",A.habitacionReserva.numHabitacion);
+
+            for(int i=0; i<A.cantidadPersonas; i++)
+            {
+                printf("\nHuesped %d: ",i+1);
+                printf("\n- Nombre y Apellido     : %s",A.clienteReserva[i].nombre);
+                printf("\n- Documento             : %d",A.clienteReserva[i].dni);
+                printf("\n- Edad                  : %d",A.clienteReserva[i].edad);
+            }
+            printf("\n             ----");
+            printf("\n- Cantidad de Noches    : %d",A.cantNoches);
+            if(A.pensionComida==50)
+                printf("\n- Pension de Comida     : Media");
+            else
+                printf("\n- Pension de Comida     : Completa");
+
+            if(A.servicio==100)
+            {
+                printf("\n- Servicios             : Gym y Spa");
+            }
+            else if(A.servicio==70)
+            {
+                printf("\n- Servicios             : Spa");
+            }
+            else if(A.servicio==50)
+            {
+                printf("\n- Servicios             : Gym");
+            }
+            else
+            {
+                printf("\n- Servicios             : No");
+            }
+            printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
+            printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
+            printf("\n- Tipo de Pago          : %s",A.tipoPago);
+}
+
+void busquedaPorNombre(char archivo[],char buscado[])
+{
+
 }
