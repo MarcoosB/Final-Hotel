@@ -45,10 +45,10 @@ typedef struct
 
 stReserva cargarFamilia(stReserva A,int pos,int x,int y);
 int valorDeServicios(char a,char b);
-stHabitacion modificarDisponibilidad(stHabitacion A);
 float precioTotal(stReserva A,int vHabitacion);
 float tipoDePago(char tipo[],float total,int cuotas);
 int valorEstacionamiento(char c,stReserva A);
+stHabitacion cambioDisponibilidad(stHabitacion A);
 
 int main()
 {
@@ -329,10 +329,12 @@ void menu()
                 gotoxy(8,8);
                 printf("\nEl numero de Habitacion no se encuentra registrada en una reserva...");
             }
-
-            printf("\nSeguro desea cancelar la reserva? Presione 's' o 'n': ");
-            fflush(stdin);
-            scanf("%c",&seguro);
+            else
+            {
+                printf("\nSeguro desea cancelar la reserva? Presione 's' o 'n': ");
+                fflush(stdin);
+                scanf("%c",&seguro);
+            }
 
             if(seguro=='s'||seguro=='S')
             {
@@ -474,7 +476,7 @@ void cargarReserva(char archivoReserva[])
         }
         while(veriDispo!=1 || veriTipo!=1);
 
-        pasajeHabitacionNoDisponible("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
+        modificarDisponibilidad("Habitaciones.bin",reserva.habitacionReserva.numHabitacion);
 
         float total = precioTotal(reserva,vHabitacion);
 
@@ -525,13 +527,13 @@ void cargarReserva(char archivoReserva[])
             gotoxy(10,23);
             printf("Opciones de cuotas: ");
             gotoxy(10,25);
-            printf("- 3  cuotas (con 15%% de recargo)");
+            printf("- 3  cuotas de $ %.2f  (15%% de recargo)",(total*1.15)/3);
             gotoxy(10,26);
-            printf("- 6  cuotas (con 20%% de recargo)");
+            printf("- 6  cuotas de $ %.2f  (20%% de recargo)",(total*1.20)/6);
             gotoxy(10,27);
-            printf("- 9  cuotas (con 25%% de recargo)");
+            printf("- 9  cuotas de $ %.2f  (25%% de recargo)",(total*1.25)/9);
             gotoxy(10,28);
-            printf("- 12 cuotas (con 30%% de recargo)");
+            printf("- 12 cuotas de $ %.2f  (30%% de recargo)",(total*1.30)/12);
             gotoxy(10,30);
             printf("Seleccione cantidad de cuotas: ");
             scanf("%d",&cuotas);
@@ -557,14 +559,15 @@ void cargarReserva(char archivoReserva[])
     }
 }
 
-
 int valorEstacionamiento(char c,stReserva A)
 {
     int v;
     if(c == 's'||c =='S')
     {
         v = 25 * A.cantNoches;
-    }else{
+    }
+    else
+    {
         v=0;
     }
     return v;
@@ -752,13 +755,13 @@ void mostrarDoblesDisponibles(char archivoHabitaciones[])
         {
             if((room.numHabitacion<=43 && room.numHabitacion%2==1) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf(" %d |", room.numHabitacion);
+                printf("[ %d ]", room.numHabitacion);
             }
             fread(&room,sizeof(stHabitacion),1,archi);
             if((room.numHabitacion<=43 && room.numHabitacion%2==1) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
 
-                printf(" %d |", room.numHabitacion);
+                printf("[ %d ]", room.numHabitacion);
             }
         }
         fclose(archi);
@@ -779,7 +782,7 @@ void mostrarTriplesDisponibles(char archivoHabitaciones[])
         {
             if((room.numHabitacion<=44 && room.numHabitacion%2==0) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf(" %d |",room.numHabitacion);
+                printf("[ %d ]",room.numHabitacion);
             }
         }
         fclose(archi);
@@ -796,7 +799,7 @@ void mostrarCuadruplesDisponibles(char archivoHabitaciones[])
         {
             if((room.numHabitacion>=45 && room.numHabitacion<=49) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf(" %d |",room.numHabitacion);
+                printf("[ %d ]",room.numHabitacion);
             }
         }
         fclose(archi);
@@ -813,7 +816,7 @@ void mostrarSuitesDisponibles(char archivoHabitaciones[])
         {
             if((room.numHabitacion>=50 && room.numHabitacion<=55) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf(" %d |",room.numHabitacion);
+                printf("[ %d ]",room.numHabitacion);
             }
         }
         fclose(archi);
@@ -837,7 +840,7 @@ void mostrarPorTipodeHabitaciones(char archivoHabitaciones[],char tipo[])
     }
 }
 
-void pasajeHabitacionNoDisponible(char archivoHabitaciones[],int numHab)
+void modificarDisponibilidad(char archivoHabitaciones[],int numHab)
 {
     stHabitacion A;
     int pos = busquedaPosicionHab(archivoHabitaciones,numHab);
@@ -847,7 +850,7 @@ void pasajeHabitacionNoDisponible(char archivoHabitaciones[],int numHab)
         fseek(archi,sizeof(stHabitacion)*(pos-1),SEEK_SET);
         fread(&A,sizeof(stHabitacion),1,archi);
 
-        A = modificarDisponibilidad(A);
+        A = cambioDisponibilidad(A);
 
         fseek(archi,sizeof(stHabitacion)*(pos-1),SEEK_SET);
         fwrite(&A,sizeof(stHabitacion),1,archi);
@@ -856,9 +859,12 @@ void pasajeHabitacionNoDisponible(char archivoHabitaciones[],int numHab)
     }
 }
 
-stHabitacion modificarDisponibilidad(stHabitacion A)
+stHabitacion cambioDisponibilidad(stHabitacion A)
 {
-    A.disponibilidad='n';
+    if(A.disponibilidad=='s'||A.disponibilidad=='S')
+        A.disponibilidad='n';
+    else if(A.disponibilidad=='n'||A.disponibilidad=='N')
+        A.disponibilidad='s';
     return A;
 }
 
@@ -1034,7 +1040,8 @@ void mostrarDeAUno(stReserva A)
     if(A.serviciosReserva.estacionamiento !=0)
     {
         printf("\n- Estacionamiento       : Si");
-    }else
+    }
+    else
     {
         printf("\n- Estacionamieto        : No");
     }
@@ -1109,7 +1116,6 @@ int busquedaPorTipoHabitacion(char archivo[],char buscado[])
 
 void borrarRegistro(int bNumHab)
 {
-
     FILE *archi = fopen("Reservas.bin","rb");
     if(archi==NULL)
         exit(1);
@@ -1125,7 +1131,7 @@ void borrarRegistro(int bNumHab)
     {
         if(bNumHab==A.habitacionReserva.numHabitacion)
         {
-            printf("La habitacion eliminada es: %d",A.habitacionReserva.numHabitacion);
+            printf("La reserva eliminada es de la habitacion: %d",A.habitacionReserva.numHabitacion);
             existe = 1;
         }
         else
@@ -1143,6 +1149,8 @@ void borrarRegistro(int bNumHab)
     fclose(nuevo);
     remove("Reservas.bin");
     rename("Reservas.tmp","Reservas.bin");
-    //pasajeHabitacionDisponible("Habitaciones.bin",bNumHab);
+    modificarDisponibilidad("Habitaciones.bin",bNumHab);
 }
+
+
 
