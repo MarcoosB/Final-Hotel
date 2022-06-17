@@ -833,7 +833,7 @@ void mostrarPorTipodeHabitaciones(char archivoHabitaciones[],char tipo[])
         {
             if((room.disponibilidad=='s'||room.disponibilidad=='S') && strcmpi(room.tipoHabitacion,tipo)==0)
             {
-                printf(" %d |", room.numHabitacion);
+                printf("[ %d ]", room.numHabitacion);
             }
         }
         fclose(archi);
