@@ -43,12 +43,35 @@ typedef struct
     int cantidadPersonas;
 } stReserva;
 
+void menu();
+void cargarReserva(char archivoReserva[]);
+int valorEstacionamiento(char c,stReserva A);
+void mostrarArchivo(char archivoReserva[]);
 stReserva cargarFamilia(stReserva A,int pos,int x,int y);
 int valorDeServicios(char a,char b);
-float precioTotal(stReserva A,int vHabitacion);
-float tipoDePago(char tipo[],float total,int cuotas);
-int valorEstacionamiento(char c,stReserva A);
+void validacion(char a,int x,int y);
+int cargarTipoDeHabitacion(stReserva reserva, int *tipoHab);
+int valorPension(char pension[]);
+void cargarArchivoHabitaciones(char archivoHabitacion[]);
+void mostrarDisponibles(char archivoHabitaciones[]);
+void mostrarDoblesDisponibles(char archivoHabitaciones[]);
+void mostrarTriplesDisponibles(char archivoHabitaciones[]);
+void mostrarCuadruplesDisponibles(char archivoHabitaciones[]);
+void mostrarSuitesDisponibles(char archivoHabitaciones[]);
+void mostrarPorTipodeHabitaciones(char archivoHabitaciones[],char tipo[]);
+void modificarDisponibilidad(char archivoHabitaciones[],int numHab);
 stHabitacion cambioDisponibilidad(stHabitacion A);
+int busquedaPosicionHab(char archivoHabitaciones[],int numHab);
+int verificacionHabitacionDisponible(char archivoHabitaciones[],int numHab);
+int verificarPorTipoHabitacion(int numHab,char tipoHab[]);
+float tipoDePago(char tipo[],float total,int cuotas);
+float precioTotal(stReserva A,int vHabitacion);
+int busquedaPorDNI(char archivo[],int buscado);
+void mostrarDeAUno(stReserva A);
+int busquedaPorNombre(char archivo[],char buscado[]);
+int busquedaPorHabitacion(char archivo[],int buscado);
+int busquedaPorTipoHabitacion(char archivo[],char buscado[]);
+void borrarRegistro(int bNumHab);
 
 int main()
 {
@@ -673,7 +696,7 @@ int cargarTipoDeHabitacion(stReserva reserva, int *tipoHab)
     return reserva.habitacionReserva.precioHabitacion;
 }
 
-int valorPension(char pension[30])
+int valorPension(char pension[])
 {
     int valor;
     if(strcmpi(pension,"Media")==0)
