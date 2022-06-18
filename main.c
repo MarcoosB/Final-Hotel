@@ -72,6 +72,12 @@ int busquedaPorNombre(char archivo[],char buscado[]);
 int busquedaPorHabitacion(char archivo[],int buscado);
 int busquedaPorTipoHabitacion(char archivo[],char buscado[]);
 void borrarRegistro(int bNumHab);
+void mostrarOcupadas(char archivoHabitacion[]);
+int cantidadRegistros(char archivo[]);
+void ordenarArray(stReserva A[], int validos);
+void ordenarPorHabitacion(char archivo[]);
+int archivo_A_array(char archivo[],stReserva A[]);
+void array_A_archivo(char archivo[],stReserva A[],int val);
 
 int main()
 {
@@ -85,7 +91,8 @@ int main()
 
 void menu()
 {
-    int op,op2,op3,flag;
+
+    int op,op2,op3,op4,flag,cant;
     char bNombre[30], bTipoHab[30],seguro;
     int bDNI,bNumHab;
     stReserva reserva;
@@ -124,14 +131,35 @@ void menu()
             system("PAUSE");
             break;
         case 2:
+            do{
+            cant = cantidadRegistros("Reservas.bin");
             system("cls");
             gotoxy(50,2);
             printf("HOTEL YAPEYU");
-            gotoxy(47,4);
-            printf("Historial de Reservas");
-            mostrarArchivo("Reservas.bin");
+            gotoxy(68,6);
+            printf("Cantidad de Reservas registradas: %d",cant);
             printf("\n");
-            system("PAUSE");
+            gotoxy(45,4);
+            printf("Historial de Reservas");
+            printf("\n");
+            mostrarArchivo("Reservas.bin");
+            gotoxy(68,8);
+            printf("1 - Ordenar por numero de Habitacion");
+            gotoxy(68,10);
+            printf("0 - Regresar");
+            gotoxy(68,12);
+            printf("Ingrese una opcion: ");
+            fflush(stdin);
+            scanf("%d",&op4);
+            switch(op4)
+            {
+            case 1:
+                ordenarPorHabitacion("Reservas.bin");
+                break;
+            case 0:
+                break;
+            }
+            }while(op4!=0);
             break;
         case 3:
             do
@@ -176,8 +204,7 @@ void menu()
                     gotoxy(40,4);
                     printf("Habitaciones Dobles Disponibles");
                     printf("\n");
-                    gotoxy(10,6);
-                    printf("Habitaciones Dobles:");
+                    printf("Habitaciones Dobles:\n\n");
                     mostrarDoblesDisponibles("Habitaciones.bin");
                     printf("\n\n");
                     system("PAUSE");
@@ -343,13 +370,15 @@ void menu()
             printf("HOTEL YAPEYU");
             gotoxy(47,4);
             printf("Cancelar Reserva");
-            gotoxy(8,6);
+            printf("\n\nHabitaciones Ocupadas: \n\n");
+            mostrarOcupadas("Habitaciones.bin");
+            gotoxy(8,9);
             printf("\nIngrese el numero de habitacion: ");
             scanf("%d", &bNumHab);
             flag = busquedaPorHabitacion("Reservas.bin",bNumHab);
             if(flag !=1)
             {
-                gotoxy(8,8);
+                gotoxy(8,10);
                 printf("\nEl numero de Habitacion no se encuentra registrada en una reserva...");
             }
             else
@@ -363,14 +392,22 @@ void menu()
             {
                 borrarRegistro(bNumHab);
                 printf("\nReserva cancelada exitosamente!");
-                getch();
             }
-            else
+            else if(seguro=='n'||seguro=='N')
             {
                 printf("\nUsted ha decidido no cancelar la reserva...");
-                getch();
             }
+            getch();
             break;
+        case 6:
+            system("cls");
+            gotoxy(50,2);
+            printf("HOTEL YAPEYU");
+            gotoxy(47,4);
+            printf("Anashe: \n");
+            ordenarPorHabitacion("Reservas.bin");
+
+            getch();
         }
     }
     while(op!=0);
@@ -481,8 +518,7 @@ void cargarReserva(char archivoReserva[])
         printf("Habitaciones %s disponibles: \n",reserva.habitacionReserva.tipoHabitacion);
         mostrarPorTipodeHabitaciones("Habitaciones.bin",reserva.habitacionReserva.tipoHabitacion);
 
-        gotoxy(8,12);
-        printf("Elija numero de habitacion a hospedar: ");
+        printf("\n\nElija numero de habitacion a hospedar: ");
         scanf("%d",&reserva.habitacionReserva.numHabitacion);
         int veriDispo=1,veriTipo=1;
 
@@ -576,6 +612,8 @@ void cargarReserva(char archivoReserva[])
         precioFinal = tipoDePago(reserva.tipoPago,total,cuotas);
 
         printf("El Precio Final Total es: $%.2f",precioFinal);
+
+        reserva.precioTotal = precioFinal;
 
         fwrite(&reserva,sizeof(stReserva),1,archi);
         fclose(archi);
@@ -770,7 +808,7 @@ void mostrarDisponibles(char archivoHabitaciones[])
 void mostrarDoblesDisponibles(char archivoHabitaciones[])
 {
     stHabitacion room;
-    int i=33,j=-6;
+    int i=0;
     FILE *archi = fopen(archivoHabitaciones,"rb");
     if(archi!=NULL)
     {
@@ -778,13 +816,18 @@ void mostrarDoblesDisponibles(char archivoHabitaciones[])
         {
             if((room.numHabitacion<=43 && room.numHabitacion%2==1) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf("[ %d ]", room.numHabitacion);
-            }
-            fread(&room,sizeof(stHabitacion),1,archi);
-            if((room.numHabitacion<=43 && room.numHabitacion%2==1) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
-            {
-
-                printf("[ %d ]", room.numHabitacion);
+                if(i>2)
+                {
+                    printf("\n");
+                    i=0;
+                }
+                if(room.numHabitacion<10)
+                {
+                    printf("[ 0%d ]", room.numHabitacion);
+                }
+                else
+                    printf("[ %d ]", room.numHabitacion);
+                i++;
             }
         }
         fclose(archi);
@@ -799,13 +842,20 @@ void mostrarTriplesDisponibles(char archivoHabitaciones[])
 {
     stHabitacion room;
     FILE *archi = fopen(archivoHabitaciones,"rb");
+    int i=0;
     if(archi!=NULL)
     {
         while(fread(&room,sizeof(stHabitacion),1,archi)>0)
         {
             if((room.numHabitacion<=44 && room.numHabitacion%2==0) && (room.disponibilidad=='s'||room.disponibilidad=='S'))
             {
-                printf("[ %d ]",room.numHabitacion);
+                if(i>2)
+                {
+                    printf("\n");
+                    i=0;
+                }
+                printf("[ %d ]", room.numHabitacion);
+                i++;
             }
         }
         fclose(archi);
@@ -850,13 +900,25 @@ void mostrarPorTipodeHabitaciones(char archivoHabitaciones[],char tipo[])
 {
     stHabitacion room;
     FILE *archi = fopen(archivoHabitaciones,"rb");
+    int i=0;
     if(archi!=NULL)
     {
         while(fread(&room,sizeof(stHabitacion),1,archi)>0)
         {
             if((room.disponibilidad=='s'||room.disponibilidad=='S') && strcmpi(room.tipoHabitacion,tipo)==0)
             {
-                printf("[ %d ]", room.numHabitacion);
+                printf ("\n");
+                printf("                    [ %d ]", room.numHabitacion);
+                i=0;
+                while(fread(&room,sizeof(stHabitacion),1,archi)>0 && i < 4)
+                {
+                    if((room.disponibilidad=='s'||room.disponibilidad=='S') && strcmpi(room.tipoHabitacion,tipo)==0)
+                    {
+                        printf("[ %d ]", room.numHabitacion);
+                    }
+                    i++;
+                }
+
             }
         }
         fclose(archi);
@@ -1068,7 +1130,7 @@ void mostrarDeAUno(stReserva A)
     {
         printf("\n- Estacionamieto        : No");
     }
-
+    printf("\n- Precio Final          : %.2f",A.precioTotal);
 }
 
 int busquedaPorNombre(char archivo[],char buscado[])
@@ -1175,5 +1237,105 @@ void borrarRegistro(int bNumHab)
     modificarDisponibilidad("Habitaciones.bin",bNumHab);
 }
 
+void modificarReserva(char archivo[],int num)
+{
+    stReserva A;
+    FILE *archi = fopen(archivo,"r+b");
+    if(archi!=NULL)
+    {
 
+        fclose(archi);
+    }
+}
 
+void mostrarOcupadas(char archivoHabitacion[])
+{
+    stHabitacion room;
+    FILE *archi =fopen(archivoHabitacion,"rb");
+    if(archi!=NULL)
+    {
+        while(fread(&room,sizeof(stHabitacion),1,archi)>0)
+        {
+            if(room.disponibilidad=='N'||room.disponibilidad=='n')
+            {
+                printf("[ %d ]",room.numHabitacion);
+            }
+        }
+        fclose(archi);
+    }
+}
+
+int cantidadRegistros(char archivo[])
+{
+    int cant;
+    FILE *archi = fopen(archivo,"rb");
+    if(archi!=NULL)
+    {
+        fseek(archi,0,SEEK_END);
+        cant = ftell(archi)/sizeof(stReserva);
+        fclose(archi);
+    }
+    return cant;
+}
+
+void ordenarArray(stReserva A[], int validos)
+{
+    int menor, i=0;
+    stReserva aux;
+    while (i < validos)
+    {
+        menor = i;
+        for (int j=i+1; j < validos; j++)
+        {
+            if (A[menor].habitacionReserva.numHabitacion > A[j].habitacionReserva.numHabitacion)
+            {
+
+                menor = j;
+            }
+        }
+        aux = A[i];
+        A[i] = A[menor];
+        A[menor] = aux;
+        i++;
+    }
+}
+
+void array_A_archivo(char archivo[],stReserva A[],int val)
+{
+    FILE *archi = fopen(archivo,"wb");
+    stReserva aux;
+    if(archi!=NULL)
+    {
+        for(int i=0; i<val; i++)
+        {
+            aux = A[i];
+            fwrite(&aux,sizeof(stReserva),1,archi);
+        }
+        fclose(archi);
+    }
+}
+
+int archivo_A_array(char archivo[],stReserva A[])
+{
+    FILE *archi = fopen(archivo,"rb");
+    stReserva aux;
+    int i=0;
+    if(archi!=NULL)
+    {
+        while(fread(&aux,sizeof(stReserva),1,archi)>0)
+        {
+            A[i]=aux;
+            i++;
+        }
+        fclose(archi);
+    }
+    return i;
+}
+
+void ordenarPorHabitacion(char archivo[])
+{
+    stReserva A[100];
+    int val = archivo_A_array(archivo,A);
+    ordenarArray(A,val);
+    array_A_archivo(archivo,A,val);
+}
