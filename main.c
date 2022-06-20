@@ -96,7 +96,7 @@ int main()
 void menu()
 {
 
-    int op,op2,op3,op4,op2a,op2a1,op2b,op2c;
+    int op,op2,op3,op4,op2a,op2a1,op2a2,op2c;
     int flag,cant,habit,huesped,bDNI,bNumHab;
     char bNombre[30], bTipoHab[30],seguro;
     stReserva reserva;
@@ -227,6 +227,7 @@ void menu()
                     scanf("%d",&op2a);
                     switch(op2a)
                     {
+                        ///--------------2)2.[1]Modificar Huesped-----------------///
                     case 1:
                         system("cls");
                         gotoxy(50,2);
@@ -245,7 +246,7 @@ void menu()
                             scanf("%d",&huesped);
                             flag = verificacionHuesped("Reservas.bin",habit,huesped);
                         }
-
+                        do{
                         system("cls");
                         gotoxy(50,2);
                         printf("HOTEL YAPEYU");
@@ -253,7 +254,7 @@ void menu()
                         printf("Modificando Huesped %d de la Habitacion %d\n",huesped,habit);
                         flag = busquedaPorHabitacion("Reservas.bin",habit);
                         gotoxy(68,6);
-                        printf("Que desea modificar del huesped %d? :",huesped);
+                        printf("Que desea modificar del huesped %d?",huesped);
                         gotoxy(68,8);
                         printf("1 - Nombre y Apellido");
                         gotoxy(68,10);
@@ -261,31 +262,93 @@ void menu()
                         gotoxy(68,12);
                         printf("3 - Documento");
                         gotoxy(68,14);
-                        printf("4 - Regresar...");
+                        printf("0 - Regresar...");
                         gotoxy(68,16);
                         printf("Ingrese una opcion: ");
                         fflush(stdin);
                         scanf("%d",&op2a1);
                         switch(op2a1)
                         {
+                             ///--------------2)2.[1,1]Modificar Nombre-----------------///
                         case 1:
                             system("cls");
                             gotoxy(50,2);
                             printf("HOTEL YAPEYU");
-                            gotoxy(28,4);
+                            gotoxy(32,4);
                             printf("Modificando Nombre y Apellido del Huesped %d de la Habitacion %d\n",huesped,habit);
                             flag = busquedaPorHabitacion("Reservas.bin",habit);
                             modificarNombreHuesped("Reservas.bin",habit,huesped);
                             break;
+
+                            ///--------------2)2.[1,2]Modificar Edad-----------------///
                         case 2:
                             system("cls");
                             gotoxy(50,2);
                             printf("HOTEL YAPEYU");
-                            gotoxy(30,4);
+                            gotoxy(35,4);
                             printf("Modificando Edad del Huesped %d de la Habitacion %d\n",huesped,habit);
                             flag = busquedaPorHabitacion("Reservas.bin",habit);
+                            modificarEdadHuesped("Reservas.bin",habit,huesped);
+                            break;
+
+                             ///--------------2)2.[1,3]Modificar DNI-----------------///
+                        case 3:
+                            system("cls");
+                            gotoxy(50,2);
+                            printf("HOTEL YAPEYU");
+                            gotoxy(34,4);
+                            printf("Modificando Documento del Huesped %d de la Habitacion %d\n",huesped,habit);
+                            flag = busquedaPorHabitacion("Reservas.bin",habit);
+                            modificarDocumento("Reservas.bin",habit,huesped);
+                            break;
+                            ///--------------2)2.[1,0]REGRESAR-----------------///
+                        case 0:
+                            break;
+                        default:
+                            gotoxy(68,20);
+                            printf("La opcion ingresada no existe...");
+                            gotoxy(68,22);
+                            system("PAUSE");
+                            break;
                         }
+                    }while(op2a1!=0);
                         break;
+                    ///-----------Modificar Servicios--------------///
+                        case 2:
+                            do{
+                            system("cls");
+                            gotoxy(50,2);
+                            printf("HOTEL YAPEYU");
+                            gotoxy(35,4);
+                            printf("Modificar Servicios de la Reserva Habitacion %d\n",habit);
+                            flag = busquedaPorHabitacion("Reservas.bin",habit);
+                            gotoxy(68,6);
+                            printf("Que servicio desea modificar?");
+                            gotoxy(68,8);
+                            printf("1 - Gym y Spa");
+                            gotoxy(68,10);
+                            printf("2 - Pension");
+                            gotoxy(68,12);
+                            printf("3 - Estacionamiento");
+                            gotoxy(68,14);
+                            printf("0 - Regresar...");
+                            gotoxy(68,16);
+                            printf("Ingrese una opcion: ");
+                            scanf("%d",&op2a2);
+                            switch(op2a2)
+                            {
+                            case 1:
+                                system("cls");
+                                gotoxy(50,2);
+                                printf("HOTEL YAPEYU");
+                                gotoxy(35,4);
+                                printf("Modificar Gym y Spa de la Reserva Habitacion %d\n",habit);
+                                flag = busquedaPorHabitacion("Reservas.bin",habit);
+                                modificarGymSpa("Reservas.bin",habit);
+                                break;
+                            }
+                            }while(op2a2!=0);
+                            break;
                     }
                 }while(op2a!=0);
 
@@ -1487,7 +1550,7 @@ int verificacionHuesped(char archivo[],int numHab,int huesped)
     return flag;
 }
 
-void modificarNombreHuesped(char archivo[],int numHab,int huesped) ///FUNCIONAS MASOMENOS, MODIFICA SOLO LOS QUE TIENEN UN HUESPED :v
+void modificarNombreHuesped(char archivo[],int numHab,int huesped)
 {
     int i = (huesped - 1);
     int pos = busquedaHabitacionposicion(archivo,numHab);
@@ -1530,7 +1593,74 @@ int busquedaHabitacionposicion(char archivo[],int numHab)
     return pos;
 }
 
+void modificarEdadHuesped(char archivo[],int numHab,int huesped)
+{
+    int i = (huesped - 1);
+    int pos = busquedaHabitacionposicion(archivo,numHab);
+    FILE *archi = fopen(archivo,"r+b");
+    stReserva A;
+    if(archi!=NULL)
+    {
+        fseek(archi,sizeof(stReserva)*(pos-1),SEEK_SET);
+        fread(&A,sizeof(stReserva),1,archi);
 
+        gotoxy(68,8);
+        printf("Ingrese nueva Edad: ");
+        scanf("%d",&A.clienteReserva[i].edad);
 
+        fseek(archi,sizeof(stReserva)*(pos-1),SEEK_SET);
+        fwrite(&A,sizeof(stReserva),1,archi);
+    }
+    fclose(archi);
+}
 
+void modificarDocumento(char archivo[],int numHab,int huesped)
+{
+    int i = (huesped - 1);
+    int pos = busquedaHabitacionposicion(archivo,numHab);
+    FILE *archi = fopen(archivo,"r+b");
+    stReserva A;
+    if(archi!=NULL)
+    {
+        fseek(archi,sizeof(stReserva)*(pos-1),SEEK_SET);
+        fread(&A,sizeof(stReserva),1,archi);
 
+        gotoxy(68,8);
+        printf("Ingrese nuevo DNI: ");
+        scanf("%d",&A.clienteReserva[i].dni);
+
+        fseek(archi,sizeof(stReserva)*(pos-1),SEEK_SET);
+        fwrite(&A,sizeof(stReserva),1,archi);
+    }
+    fclose(archi);
+}
+
+void modificarGymSpa(char archivo[],int numHab)
+{
+    int pos = busquedaHabitacionposicion(archivo,numHab);
+    FILE *archi = fopen(archivo,"r+b");
+    stReserva A;
+    char a,b;
+    if(archi!=NULL)
+    {
+        fseek(archi,sizeof(stReserva)*(pos-1),0);
+        fread(&A,sizeof(stReserva),1,archi);
+
+        gotoxy(68,8);
+        printf("- Ingrese uso de Gym (s/n): ");
+        fflush(stdin);
+        scanf("%c",&a);
+        validacion(a,68,9);
+        gotoxy(68,10);
+        printf("- Ingrese uso de Spa (s/n): ");
+        fflush(stdin);
+        scanf("%c",&b);
+        validacion(a,68,10);
+
+        A.serviciosReserva.servicio=valorDeServicios(a,b);
+
+        fseek(archi,sizeof(stReserva)*(pos-1),0);
+        fwrite(&A,sizeof(stReserva),1,archi);
+        fclose(archi);
+    }
+}
