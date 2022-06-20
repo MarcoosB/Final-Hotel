@@ -33,11 +33,18 @@ typedef struct
 
 typedef struct
 {
+    char tipoPago[30];
+    int cuotas;
+
+}stMetodoPago;
+
+typedef struct
+{
     stCliente clienteReserva[10];
     stHabitacion habitacionReserva;
     stServicios serviciosReserva;
+    stMetodoPago pagoReserva;
     int cantNoches;
-    char tipoPago[30];
     float precioTotal;
     char estado[30];
     int cantidadPersonas;
@@ -81,7 +88,9 @@ void array_A_archivo(char archivo[],stReserva A[],int val);
 int verificacionHuesped(char archivo[],int numHab,int huesped);
 int busquedaHabitacionposicion(char archivo[],int numHab);
 void modificarNombreHuesped(char archivo[],int numHab,int huesped);
-
+void modificarEdadHuesped(char archivo[],int numHab,int huesped);
+void modificarDocumento(char archivo[],int numHab,int huesped);
+void modificarGymSpa(char archivo[],int numHab);
 
 int main()
 {
@@ -766,19 +775,19 @@ void cargarReserva(char archivoReserva[])
         gotoxy(10,22);
         printf("Elija metodo de pago (Efectivo / Debito / Credito): ");
         fflush(stdin);
-        gets(reserva.tipoPago);
-        int cuotas;
+        gets(reserva.pagoReserva.tipoPago);
+
         float precioFinal;
 
-        while(strcmpi(reserva.tipoPago,"Efectivo")!=0 && strcmpi(reserva.tipoPago,"Debito")!=0 && strcmpi(reserva.tipoPago,"Credito")!=0)
+        while(strcmpi(reserva.pagoReserva.tipoPago,"Efectivo")!=0 && strcmpi(reserva.pagoReserva.tipoPago,"Debito")!=0 && strcmpi(reserva.pagoReserva.tipoPago,"Credito")!=0)
         {
             gotoxy(10,21);
             printf("Metodo de Pago Inexistente! Por favor, ingrese nuevamente: ");
             fflush(stdin);
-            gets(reserva.tipoPago);
+            gets(reserva.pagoReserva.tipoPago);
         }
 
-        if(strcmpi(reserva.tipoPago,"Credito")==0)
+        if(strcmpi(reserva.pagoReserva.tipoPago,"Credito")==0)
         {
             gotoxy(10,23);
             printf("Opciones de cuotas: ");
@@ -792,12 +801,12 @@ void cargarReserva(char archivoReserva[])
             printf("- 12 cuotas de $ %.2f  (30%% de recargo)",(total*1.30)/12);
             gotoxy(10,30);
             printf("Seleccione cantidad de cuotas: ");
-            scanf("%d",&cuotas);
-            while(cuotas!=3 && cuotas!=6 && cuotas!=9 && cuotas!=12)
+            scanf("%d",&reserva.pagoReserva.cuotas);
+            while(reserva.pagoReserva.cuotas!=3 && reserva.pagoReserva.cuotas!=6 && reserva.pagoReserva.cuotas!=9 && reserva.pagoReserva.cuotas!=12)
             {
                 gotoxy(10,31);
                 printf("Error! Intente nuevamente: ");
-                scanf("%d",&cuotas);
+                scanf("%d",&reserva.pagoReserva.cuotas);
             }
             gotoxy(10,33);
         }
@@ -806,7 +815,7 @@ void cargarReserva(char archivoReserva[])
             gotoxy(10,23);
         }
 
-        precioFinal = tipoDePago(reserva.tipoPago,total,cuotas);
+        precioFinal = tipoDePago(reserva.pagoReserva.tipoPago,total,reserva.pagoReserva.cuotas);
 
         printf("El Precio Final Total es: $%.2f",precioFinal);
 
@@ -1323,7 +1332,11 @@ void mostrarDeAUno(stReserva A)
     }
     printf("\n- Tipo de Habitacion    : %s",A.habitacionReserva.tipoHabitacion);
     printf("\n- Cantidad de Personas  : %d",A.cantidadPersonas);
-    printf("\n- Tipo de Pago          : %s",A.tipoPago);
+    printf("\n- Tipo de Pago          : %s",A.pagoReserva.tipoPago);
+    if(strcmpi(A.pagoReserva.tipoPago,"Credito")==0)
+    {
+        printf("\n- Pago en %d Cuotas", A.pagoReserva.cuotas);
+    }
     if(A.serviciosReserva.estacionamiento !=0)
     {
         printf("\n- Estacionamiento       : Si");
